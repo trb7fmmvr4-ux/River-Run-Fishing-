@@ -1,0 +1,870 @@
+{
+  "pack": "River Run Fishing \u2014 Phase 1 World Foundation Art Pack",
+  "version": "1.0.0",
+  "tile_size": 32,
+  "note": "Procedurally generated foundation art. 32px source tiles (downscale cleanly to the 16px world grid). All terrain, water and shoreline tiles tile seamlessly. Objects & effects use transparent backgrounds. Designed for tile-for-tile replacement by hand-painted art using this manifest.",
+  "categories": {
+    "terrain": {
+      "sheet": "terrain/terrain_sheet.png",
+      "assets": {
+        "grass": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "tall_grass": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "dirt": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "dark_dirt": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "sand": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "forest_floor": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "stone_ground": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "path": {
+          "sheet": "terrain/terrain_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        }
+      }
+    },
+    "water": {
+      "sheet": "water/water_sheet.png",
+      "assets": {
+        "river": {
+          "sheet": "water/water_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 1,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 35,
+              "y": 1,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 69,
+              "y": 1,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 103,
+              "y": 1,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        },
+        "lake": {
+          "sheet": "water/water_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 35,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 35,
+              "y": 35,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 69,
+              "y": 35,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 103,
+              "y": 35,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        },
+        "ocean": {
+          "sheet": "water/water_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 69,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 35,
+              "y": 69,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 69,
+              "y": 69,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 103,
+              "y": 69,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        },
+        "deep_water": {
+          "sheet": "water/water_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 103,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 35,
+              "y": 103,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 69,
+              "y": 103,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 103,
+              "y": 103,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        },
+        "swamp": {
+          "sheet": "water/water_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 137,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 35,
+              "y": 137,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 69,
+              "y": 137,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 103,
+              "y": 137,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        }
+      }
+    },
+    "shorelines": {
+      "sheet": "shorelines/shorelines_sheet.png",
+      "assets": {
+        "edge_n": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "edge_s": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "edge_e": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "edge_w": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "corner_ne": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "corner_nw": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "corner_se": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "corner_sw": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 35,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "inner_ne": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 69,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "inner_nw": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 69,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "inner_se": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 69,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "inner_sw": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 69,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "curve_ne": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 103,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        },
+        "curve_sw": {
+          "sheet": "shorelines/shorelines_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 103,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ]
+        }
+      }
+    },
+    "nature": {
+      "sheet": "nature/nature_sheet.png",
+      "assets": {
+        "tree": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "pine_tree": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "bush": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 24,
+            "h": 20
+          },
+          "size": [
+            24,
+            20
+          ]
+        },
+        "flower_red": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "flower_pink": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 137,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "flower_white": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 51,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "flower_purple": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 51,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "mushroom_red": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 51,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "mushroom_brown": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 51,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "reeds": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 137,
+            "y": 51,
+            "w": 20,
+            "h": 28
+          },
+          "size": [
+            20,
+            28
+          ]
+        },
+        "log": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 101,
+            "w": 28,
+            "h": 16
+          },
+          "size": [
+            28,
+            16
+          ]
+        },
+        "stump": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 101,
+            "w": 20,
+            "h": 18
+          },
+          "size": [
+            20,
+            18
+          ]
+        },
+        "small_rock": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 101,
+            "w": 16,
+            "h": 12
+          },
+          "size": [
+            16,
+            12
+          ]
+        },
+        "large_rock": {
+          "sheet": "nature/nature_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 101,
+            "w": 28,
+            "h": 22
+          },
+          "size": [
+            28,
+            22
+          ]
+        }
+      }
+    },
+    "effects": {
+      "sheet": "effects/effects_sheet.png",
+      "assets": {
+        "water_ripple": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 5,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            },
+            {
+              "x": 35,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            },
+            {
+              "x": 69,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            },
+            {
+              "x": 103,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            },
+            {
+              "x": 137,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            }
+          ],
+          "size": [
+            16,
+            16
+          ]
+        },
+        "shore_foam": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 171,
+              "y": 1,
+              "w": 32,
+              "h": 8
+            },
+            {
+              "x": 1,
+              "y": 19,
+              "w": 32,
+              "h": 8
+            },
+            {
+              "x": 35,
+              "y": 19,
+              "w": 32,
+              "h": 8
+            },
+            {
+              "x": 69,
+              "y": 19,
+              "w": 32,
+              "h": 8
+            }
+          ],
+          "size": [
+            32,
+            8
+          ]
+        },
+        "leaf_particle": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 6,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 103,
+              "y": 19,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 137,
+              "y": 19,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 171,
+              "y": 19,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 1,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 35,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 69,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            }
+          ],
+          "size": [
+            8,
+            8
+          ]
+        },
+        "ambient_sparkle": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 4,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 103,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 137,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 171,
+              "y": 37,
+              "w": 8,
+              "h": 8
+            },
+            {
+              "x": 1,
+              "y": 55,
+              "w": 8,
+              "h": 8
+            }
+          ],
+          "size": [
+            8,
+            8
+          ]
+        }
+      }
+    }
+  }
+}

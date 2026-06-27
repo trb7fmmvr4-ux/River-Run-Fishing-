@@ -1,0 +1,914 @@
+{
+  "pack": "River Run Fishing \u2014 Phase 4 Buildings, UI & Expansion Foundation Pack",
+  "version": "1.0.0",
+  "note": "Procedurally generated structures, lodge decoration, UI (icons/buttons/panels matching the game's exact HUD palette), event effects, and a RESERVED expansion structure (art placeholders + empty folders only \u2014 no systems). Buildings & decor are transparent objects; UI matches existing colours so it drops into current panels; effects are play-once animation strips.",
+  "categories": {
+    "buildings": {
+      "sheet": "buildings/buildings_sheet.png",
+      "assets": {
+        "village_house_brown": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 2,
+            "w": 48,
+            "h": 48
+          },
+          "size": [
+            48,
+            48
+          ]
+        },
+        "village_house_blue": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 63,
+            "y": 2,
+            "w": 48,
+            "h": 48
+          },
+          "size": [
+            48,
+            48
+          ]
+        },
+        "village_house_green": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 121,
+            "y": 2,
+            "w": 48,
+            "h": 48
+          },
+          "size": [
+            48,
+            48
+          ]
+        },
+        "shop": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 175,
+            "y": 1,
+            "w": 56,
+            "h": 50
+          },
+          "size": [
+            56,
+            50
+          ]
+        },
+        "fishing_hut": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 54,
+            "w": 48,
+            "h": 48
+          },
+          "size": [
+            48,
+            48
+          ]
+        },
+        "dock": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 59,
+            "y": 62,
+            "w": 56,
+            "h": 32
+          },
+          "size": [
+            56,
+            32
+          ]
+        },
+        "lodge_wall": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 133,
+            "y": 62,
+            "w": 24,
+            "h": 32
+          },
+          "size": [
+            24,
+            32
+          ]
+        },
+        "lodge_roof": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 187,
+            "y": 68,
+            "w": 32,
+            "h": 20
+          },
+          "size": [
+            32,
+            20
+          ]
+        },
+        "lodge_door": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 21,
+            "y": 116,
+            "w": 16,
+            "h": 28
+          },
+          "size": [
+            16,
+            28
+          ]
+        },
+        "lodge_window": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 79,
+            "y": 122,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "storage_crate": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 137,
+            "y": 122,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "market_stall": {
+          "sheet": "buildings/buildings_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 183,
+            "y": 112,
+            "w": 40,
+            "h": 36
+          },
+          "size": [
+            40,
+            36
+          ]
+        }
+      }
+    },
+    "decor": {
+      "sheet": "decor/decor_sheet.png",
+      "assets": {
+        "bed": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 24,
+            "h": 16
+          },
+          "size": [
+            24,
+            16
+          ]
+        },
+        "table": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 29,
+            "y": 1,
+            "w": 20,
+            "h": 16
+          },
+          "size": [
+            20,
+            16
+          ]
+        },
+        "chair": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 59,
+            "y": 1,
+            "w": 12,
+            "h": 16
+          },
+          "size": [
+            12,
+            16
+          ]
+        },
+        "lantern": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 85,
+            "y": 1,
+            "w": 12,
+            "h": 16
+          },
+          "size": [
+            12,
+            16
+          ]
+        },
+        "trophy_display": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "fish_mount_bass": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 29,
+            "y": 20,
+            "w": 20,
+            "h": 14
+          },
+          "size": [
+            20,
+            14
+          ]
+        },
+        "fish_mount_trout": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 55,
+            "y": 20,
+            "w": 20,
+            "h": 14
+          },
+          "size": [
+            20,
+            14
+          ]
+        },
+        "fish_mount_legendary": {
+          "sheet": "decor/decor_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 81,
+            "y": 20,
+            "w": 20,
+            "h": 14
+          },
+          "size": [
+            20,
+            14
+          ]
+        }
+      }
+    },
+    "ui": {
+      "sheets": {
+        "icons": "ui/ui_icons_sheet.png",
+        "buttons": "ui/ui_buttons_sheet.png",
+        "panels": "ui/ui_panels_sheet.png"
+      },
+      "assets": {
+        "icon_inventory": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_cooler": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 19,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_gold": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 37,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_journal": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 55,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_shop": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 73,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_fish": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 91,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_hook": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_star": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 19,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_heart": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 37,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_settings": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 55,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "icon_info": {
+          "sheet": "ui/ui_icons_sheet.png",
+          "group": "icons",
+          "frames": 1,
+          "rect": {
+            "x": 73,
+            "y": 19,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "button_normal": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "button_hover": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "button_pressed": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "button_disabled": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 19,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "button_confirm": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 19,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "button_danger": {
+          "sheet": "ui/ui_buttons_sheet.png",
+          "group": "buttons",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 19,
+            "w": 32,
+            "h": 16
+          },
+          "size": [
+            32,
+            16
+          ]
+        },
+        "panel_default": {
+          "sheet": "ui/ui_panels_sheet.png",
+          "group": "panels",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 24,
+            "h": 24
+          },
+          "size": [
+            24,
+            24
+          ]
+        },
+        "panel_shop": {
+          "sheet": "ui/ui_panels_sheet.png",
+          "group": "panels",
+          "frames": 1,
+          "rect": {
+            "x": 27,
+            "y": 1,
+            "w": 24,
+            "h": 24
+          },
+          "size": [
+            24,
+            24
+          ]
+        },
+        "panel_journal": {
+          "sheet": "ui/ui_panels_sheet.png",
+          "group": "panels",
+          "frames": 1,
+          "rect": {
+            "x": 53,
+            "y": 1,
+            "w": 24,
+            "h": 24
+          },
+          "size": [
+            24,
+            24
+          ]
+        },
+        "panel_info": {
+          "sheet": "ui/ui_panels_sheet.png",
+          "group": "panels",
+          "frames": 1,
+          "rect": {
+            "x": 79,
+            "y": 1,
+            "w": 24,
+            "h": 24
+          },
+          "size": [
+            24,
+            24
+          ]
+        }
+      }
+    },
+    "effects": {
+      "sheet": "effects/effects_sheet.png",
+      "assets": {
+        "legendary_catch": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 6,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 9,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 59,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 109,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 159,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 209,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 259,
+              "y": 9,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        },
+        "exotic_catch": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 7,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 305,
+              "y": 5,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 5,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 55,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 105,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 155,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 205,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            },
+            {
+              "x": 255,
+              "y": 55,
+              "w": 40,
+              "h": 40
+            }
+          ],
+          "size": [
+            40,
+            40
+          ]
+        },
+        "boss_spawn": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 7,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 301,
+              "y": 51,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 1,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 51,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 101,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 151,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 201,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            },
+            {
+              "x": 251,
+              "y": 101,
+              "w": 48,
+              "h": 48
+            }
+          ],
+          "size": [
+            48,
+            48
+          ]
+        },
+        "quest_complete": {
+          "sheet": "effects/effects_sheet.png",
+          "frames": 6,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 309,
+              "y": 109,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 9,
+              "y": 159,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 59,
+              "y": 159,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 109,
+              "y": 159,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 159,
+              "y": 159,
+              "w": 32,
+              "h": 32
+            },
+            {
+              "x": 209,
+              "y": 159,
+              "w": 32,
+              "h": 32
+            }
+          ],
+          "size": [
+            32,
+            32
+          ]
+        }
+      }
+    },
+    "expansion": {
+      "sheet": "expansion/expansion_reserved_sheet.png",
+      "assets": {
+        "reserved_biome": {
+          "sheet": "expansion/expansion_reserved_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ],
+          "reserved": true
+        },
+        "reserved_boss": {
+          "sheet": "expansion/expansion_reserved_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ],
+          "reserved": true
+        },
+        "reserved_region": {
+          "sheet": "expansion/expansion_reserved_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ],
+          "reserved": true
+        },
+        "reserved_multiplayer": {
+          "sheet": "expansion/expansion_reserved_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 1,
+            "w": 32,
+            "h": 32
+          },
+          "size": [
+            32,
+            32
+          ],
+          "reserved": true
+        }
+      },
+      "reserved_folders": {
+        "future_biomes": {
+          "path": "expansion/reserved/future_biomes",
+          "description": "Reserved for future biome art (terrain/water/props for new environments: snow, desert, volcanic, etc.). Mirror the Phase 1 category layout when filling in.",
+          "reserved": true
+        },
+        "future_bosses": {
+          "path": "expansion/reserved/future_bosses",
+          "description": "Reserved for future boss art (one folder per boss, state-per-row sheets like Phase 3's Fish King).",
+          "reserved": true
+        },
+        "future_regions": {
+          "path": "expansion/reserved/future_regions",
+          "description": "Reserved for future fishing-region art (region-specific tilesets, landmarks, decorations).",
+          "reserved": true
+        },
+        "future_multiplayer": {
+          "path": "expansion/reserved/future_multiplayer",
+          "description": "Reserved for multiplayer-only art (player cosmetic variants, name tags, emotes, shared-space props).",
+          "reserved": true
+        }
+      },
+      "note": "Reserved art structure only. No systems are implemented for these."
+    }
+  }
+}

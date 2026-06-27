@@ -1,0 +1,1433 @@
+{
+  "pack": "River Run Fishing \u2014 Phase 2 Fishing & Creature Art Pack",
+  "version": "1.0.0",
+  "note": "Procedurally generated fishing ecosystem. 63 fish across 5 rarity tiers (rarer tiers are larger, more vivid, with glow and ornate fins so rarity reads at a glance), plus gear, loot and ambient creatures. Fish are produced by a parametric renderer from data records \u2014 adding a species is one data row, no renderer change. The 8 fish already in the game's FishData.ts use their real ids so art maps 1:1.",
+  "categories": {
+    "fish": {
+      "sheets_by_rarity": {
+        "common": "fish/fish_common_sheet.png",
+        "uncommon": "fish/fish_uncommon_sheet.png",
+        "rare": "fish/fish_rare_sheet.png",
+        "legendary": "fish/fish_legendary_sheet.png",
+        "exotic": "fish/fish_exotic_sheet.png"
+      },
+      "assets": {
+        "sunfish": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Sunfish",
+          "frames": 1,
+          "rect": {
+            "x": 4,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "river-perch": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "River Perch",
+          "frames": 1,
+          "rect": {
+            "x": 52,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "bluegill": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Bluegill",
+          "frames": 1,
+          "rect": {
+            "x": 100,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "creek-chub": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Creek Chub",
+          "frames": 1,
+          "rect": {
+            "x": 148,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "mud-minnow": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Mud Minnow",
+          "frames": 1,
+          "rect": {
+            "x": 196,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "smelt": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Smelt",
+          "frames": 1,
+          "rect": {
+            "x": 244,
+            "y": 2,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "dace": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Dace",
+          "frames": 1,
+          "rect": {
+            "x": 4,
+            "y": 28,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "common-roach": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Common Roach",
+          "frames": 1,
+          "rect": {
+            "x": 52,
+            "y": 28,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "rudd": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Rudd",
+          "frames": 1,
+          "rect": {
+            "x": 100,
+            "y": 28,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "yellow-perch": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Yellow Perch",
+          "frames": 1,
+          "rect": {
+            "x": 148,
+            "y": 28,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "brook-trout": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Brook Trout",
+          "frames": 1,
+          "rect": {
+            "x": 193,
+            "y": 27,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "rainbow-trout": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Rainbow Trout",
+          "frames": 1,
+          "rect": {
+            "x": 241,
+            "y": 27,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "brown-trout": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Brown Trout",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "largemouth-bass": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Largemouth Bass",
+          "frames": 1,
+          "rect": {
+            "x": 49,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "smallmouth-bass": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Smallmouth Bass",
+          "frames": 1,
+          "rect": {
+            "x": 97,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "crappie": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Crappie",
+          "frames": 1,
+          "rect": {
+            "x": 145,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "chub": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "River Chub",
+          "frames": 1,
+          "rect": {
+            "x": 193,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "carp": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Common Carp",
+          "frames": 1,
+          "rect": {
+            "x": 241,
+            "y": 53,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "tilapia": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Tilapia",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 79,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "white-sucker": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "White Sucker",
+          "frames": 1,
+          "rect": {
+            "x": 49,
+            "y": 79,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "bullhead": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Brown Bullhead",
+          "frames": 1,
+          "rect": {
+            "x": 97,
+            "y": 79,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "fallfish": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Fallfish",
+          "frames": 1,
+          "rect": {
+            "x": 145,
+            "y": 79,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "shiner": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Golden Shiner",
+          "frames": 1,
+          "rect": {
+            "x": 196,
+            "y": 80,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "pumpkinseed": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Pumpkinseed",
+          "frames": 1,
+          "rect": {
+            "x": 244,
+            "y": 80,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "warmouth": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Warmouth",
+          "frames": 1,
+          "rect": {
+            "x": 4,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "fathead": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Fathead Minnow",
+          "frames": 1,
+          "rect": {
+            "x": 52,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "stoneroller": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Stoneroller",
+          "frames": 1,
+          "rect": {
+            "x": 100,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "logperch": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Logperch",
+          "frames": 1,
+          "rect": {
+            "x": 148,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "madtom": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Madtom",
+          "frames": 1,
+          "rect": {
+            "x": 196,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "killifish": {
+          "sheet": "fish/fish_common_sheet.png",
+          "rarity": "common",
+          "name": "Killifish",
+          "frames": 1,
+          "rect": {
+            "x": 244,
+            "y": 106,
+            "w": 40,
+            "h": 22
+          },
+          "size": [
+            40,
+            22
+          ]
+        },
+        "silver-trout": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Silver Trout",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 3,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "banded-bass": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Banded Bass",
+          "frames": 1,
+          "rect": {
+            "x": 61,
+            "y": 3,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "steelhead": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Steelhead",
+          "frames": 1,
+          "rect": {
+            "x": 113,
+            "y": 1,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "walleye": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Walleye",
+          "frames": 1,
+          "rect": {
+            "x": 169,
+            "y": 1,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "northern-sucker": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Northern Sucker",
+          "frames": 1,
+          "rect": {
+            "x": 229,
+            "y": 3,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "white-bass": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "White Bass",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 33,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "sauger": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Sauger",
+          "frames": 1,
+          "rect": {
+            "x": 61,
+            "y": 33,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "burbot": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Burbot",
+          "frames": 1,
+          "rect": {
+            "x": 113,
+            "y": 31,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "grayling": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Arctic Grayling",
+          "frames": 1,
+          "rect": {
+            "x": 173,
+            "y": 33,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "cutthroat": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Cutthroat Trout",
+          "frames": 1,
+          "rect": {
+            "x": 229,
+            "y": 33,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "bowfin": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Bowfin",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 61,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "gar": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Spotted Gar",
+          "frames": 1,
+          "rect": {
+            "x": 57,
+            "y": 61,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "drum": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Freshwater Drum",
+          "frames": 1,
+          "rect": {
+            "x": 117,
+            "y": 63,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "redhorse": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Redhorse",
+          "frames": 1,
+          "rect": {
+            "x": 173,
+            "y": 63,
+            "w": 46,
+            "h": 24
+          },
+          "size": [
+            46,
+            24
+          ]
+        },
+        "muskie-jr": {
+          "sheet": "fish/fish_uncommon_sheet.png",
+          "rarity": "uncommon",
+          "name": "Juvenile Muskie",
+          "frames": 1,
+          "rect": {
+            "x": 225,
+            "y": 61,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "moonfin-pike": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Moonfin Pike",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "glassback-eel": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Glassback Eel",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "tiger-muskie": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Tiger Muskie",
+          "frames": 1,
+          "rect": {
+            "x": 129,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "golden-carp": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Golden Carp",
+          "frames": 1,
+          "rect": {
+            "x": 197,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "electric-eel": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Electric Eel",
+          "frames": 1,
+          "rect": {
+            "x": 261,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "peacock-bass": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Peacock Bass",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 37,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "arapaima-jr": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Young Arapaima",
+          "frames": 1,
+          "rect": {
+            "x": 65,
+            "y": 35,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "sturgeon": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Lake Sturgeon",
+          "frames": 1,
+          "rect": {
+            "x": 129,
+            "y": 35,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "snakehead": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Snakehead",
+          "frames": 1,
+          "rect": {
+            "x": 197,
+            "y": 37,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "paddlefish": {
+          "sheet": "fish/fish_rare_sheet.png",
+          "rarity": "rare",
+          "name": "Paddlefish",
+          "frames": 1,
+          "rect": {
+            "x": 257,
+            "y": 35,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "gilded-koi": {
+          "sheet": "fish/fish_legendary_sheet.png",
+          "rarity": "legendary",
+          "name": "Gilded Koi",
+          "frames": 1,
+          "rect": {
+            "x": 5,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "crimson-leviathan-jr": {
+          "sheet": "fish/fish_legendary_sheet.png",
+          "rarity": "legendary",
+          "name": "Crimson Serpent",
+          "frames": 1,
+          "rect": {
+            "x": 65,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "azure-emperor": {
+          "sheet": "fish/fish_legendary_sheet.png",
+          "rarity": "legendary",
+          "name": "Azure Emperor",
+          "frames": 1,
+          "rect": {
+            "x": 129,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "jade-koi": {
+          "sheet": "fish/fish_legendary_sheet.png",
+          "rarity": "legendary",
+          "name": "Jade Dragon Koi",
+          "frames": 1,
+          "rect": {
+            "x": 197,
+            "y": 3,
+            "w": 54,
+            "h": 28
+          },
+          "size": [
+            54,
+            28
+          ]
+        },
+        "solar-gar": {
+          "sheet": "fish/fish_legendary_sheet.png",
+          "rarity": "legendary",
+          "name": "Solar Gar",
+          "frames": 1,
+          "rect": {
+            "x": 257,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "phantom-leviathan": {
+          "sheet": "fish/fish_exotic_sheet.png",
+          "rarity": "exotic",
+          "name": "Phantom Leviathan",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "void-eel": {
+          "sheet": "fish/fish_exotic_sheet.png",
+          "rarity": "exotic",
+          "name": "Void Eel",
+          "frames": 1,
+          "rect": {
+            "x": 65,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        },
+        "prism-koi": {
+          "sheet": "fish/fish_exotic_sheet.png",
+          "rarity": "exotic",
+          "name": "Prism Koi",
+          "frames": 1,
+          "rect": {
+            "x": 129,
+            "y": 1,
+            "w": 62,
+            "h": 32
+          },
+          "size": [
+            62,
+            32
+          ]
+        }
+      }
+    },
+    "gear": {
+      "sheet": "gear/gear_sheet.png",
+      "assets": {
+        "rod_starter": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "rod_river": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 35,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "rod_angler": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 69,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "rod_master": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 103,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "rod_mythic": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 137,
+            "y": 1,
+            "w": 32,
+            "h": 48
+          },
+          "size": [
+            32,
+            48
+          ]
+        },
+        "reel_basic": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 179,
+            "y": 17,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "reel_steel": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 9,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "reel_gold": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 43,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "hook_basic": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 77,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "hook_steel": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 111,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "hook_barbed": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 145,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "bobber_classic": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 179,
+            "y": 67,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "bobber_blue": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 9,
+            "y": 117,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "bobber_green": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 43,
+            "y": 117,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "line_spool": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 77,
+            "y": 117,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "line_coil": {
+          "sheet": "gear/gear_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 111,
+            "y": 117,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        }
+      }
+    },
+    "loot": {
+      "sheet": "loot/loot_sheet.png",
+      "assets": {
+        "ancient_coin": {
+          "sheet": "loot/loot_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 1,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "rusty_hook": {
+          "sheet": "loot/loot_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 19,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "rod_fragment": {
+          "sheet": "loot/loot_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 37,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "treasure_map": {
+          "sheet": "loot/loot_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 55,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        },
+        "mystery_box": {
+          "sheet": "loot/loot_sheet.png",
+          "frames": 1,
+          "rect": {
+            "x": 73,
+            "y": 1,
+            "w": 16,
+            "h": 16
+          },
+          "size": [
+            16,
+            16
+          ]
+        }
+      }
+    },
+    "creatures": {
+      "sheet": "creatures/creatures_sheet.png",
+      "assets": {
+        "frog": {
+          "sheet": "creatures/creatures_sheet.png",
+          "frames": 2,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 1,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            },
+            {
+              "x": 19,
+              "y": 1,
+              "w": 16,
+              "h": 16
+            }
+          ],
+          "size": [
+            16,
+            16
+          ]
+        },
+        "bird": {
+          "sheet": "creatures/creatures_sheet.png",
+          "frames": 3,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 37,
+              "y": 3,
+              "w": 16,
+              "h": 12
+            },
+            {
+              "x": 1,
+              "y": 21,
+              "w": 16,
+              "h": 12
+            },
+            {
+              "x": 19,
+              "y": 21,
+              "w": 16,
+              "h": 12
+            }
+          ],
+          "size": [
+            16,
+            12
+          ]
+        },
+        "butterfly": {
+          "sheet": "creatures/creatures_sheet.png",
+          "frames": 2,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 38,
+              "y": 21,
+              "w": 14,
+              "h": 12
+            },
+            {
+              "x": 2,
+              "y": 39,
+              "w": 14,
+              "h": 12
+            }
+          ],
+          "size": [
+            14,
+            12
+          ]
+        },
+        "dragonfly": {
+          "sheet": "creatures/creatures_sheet.png",
+          "frames": 2,
+          "animation": true,
+          "frame_rects": [
+            {
+              "x": 19,
+              "y": 39,
+              "w": 16,
+              "h": 12
+            },
+            {
+              "x": 37,
+              "y": 39,
+              "w": 16,
+              "h": 12
+            }
+          ],
+          "size": [
+            16,
+            12
+          ]
+        }
+      }
+    }
+  }
+}

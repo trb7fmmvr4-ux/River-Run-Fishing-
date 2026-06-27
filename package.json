@@ -1,0 +1,22 @@
+{
+  "name": "river-run-fishing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "River Run Fishing — a cinematic pixel-art adventure RPG built around fishing.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
