@@ -32,7 +32,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
   public readonly touchDamage: number;
   private readonly speed: number;
   private readonly aggroRange = 90;
-  private state: 'idle' | 'chase' | 'dead' = 'idle';
+  private aiState: 'idle' | 'chase' | 'dead' = 'idle';
   private fallbackGfx?: Phaser.GameObjects.Arc;
   private animsBuilt = false;
   private readonly healthBarBg: Phaser.GameObjects.Rectangle;
@@ -122,13 +122,13 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
 
   /** Per-frame AI. `target` is the player. */
   public think(target: Phaser.GameObjects.Components.Transform & { x: number; y: number }): void {
-    if (this.state === 'dead') return;
+    if (this.aiState === 'dead') return;
     const body = this.body as Phaser.Physics.Arcade.Body;
 
     const dist = Phaser.Math.Distance.Between(this.x, this.y, target.x, target.y);
     if (dist <= this.aggroRange) {
-      if (this.state !== 'chase') {
-        this.state = 'chase';
+      if (this.aiState !== 'chase') {
+        this.aiState = 'chase';
         if (this.animsBuilt) this.play('slime-move', true);
       }
       const angle = Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y);
@@ -136,8 +136,8 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
       body.velocity.y = Math.sin(angle) * this.speed;
       this.setFlipX(Math.cos(angle) < 0);
     } else {
-      if (this.state !== 'idle') {
-        this.state = 'idle';
+      if (this.aiState !== 'idle') {
+        this.aiState = 'idle';
         if (this.animsBuilt) this.play('slime-idle', true);
       }
       body.velocity.x = 0;
@@ -149,7 +149,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
 
   /** Apply damage from a weapon hit. Returns true if this killed the slime. */
   public hurt(amount: number, now: number): boolean {
-    if (this.state === 'dead') return false;
+    if (this.aiState === 'dead') return false;
     const took = this.health.damage(amount, now, 'rod');
     if (!took) return false;
 
@@ -169,7 +169,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
   }
 
   private die(): void {
-    this.state = 'dead';
+    this.aiState = 'dead';
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0, 0);
     body.enable = false;
@@ -194,7 +194,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
   }
 
   public get isDead(): boolean {
-    return this.state === 'dead';
+    return this.aiState === 'dead';
   }
 
   public destroy(fromScene?: boolean): void {
