@@ -58,7 +58,7 @@ export class MainScene extends Phaser.Scene {
   private hud!: HUDScene;
   /** True while the pause menu is open — gates gameplay updates (movement, fishing, combat) without using Phaser's own scene.pause(), so this scene's own update loop (and the overlay it drives) keeps running. */
   private isPaused = false;
-  private panels!: UIPanelController;
+  private panels?: UIPanelController;
   private journey!: JourneyDirector;
   private menuButtons?: MenuButtons;
   private journal!: Journal;
@@ -220,17 +220,6 @@ export class MainScene extends Phaser.Scene {
     this.wireFirstPlayable();
     this.wireLoopContent();
 
-    // Panel controller: enforces single-panel-at-a-time and mid-cast gating.
-    this.panels = new UIPanelController(
-      {
-        inventoryPanel: this.hud.inventoryPanel,
-        shopPanel:      this.hud.shopPanel,
-        journalPanel:   this.hud.journalPanel
-      },
-      this.fishingSystem,
-      this.uiSound
-    );
-
     // Journey director: owns spatial story triggers, village lifecycle,
     // zone-edge transitions, and player death/respawn.
     this.journey = new JourneyDirector({
@@ -250,7 +239,7 @@ export class MainScene extends Phaser.Scene {
       getBoundSaveSlot:   () => this.boundSaveSlot,
       setBoundSaveSlot:   (s) => { this.boundSaveSlot = s; },
       transitionToZone:   (id, opts) => this.transitionToZone(id, opts),
-      openShop:           () => this.panels.toggleShop(),
+      openShop:           () => this.panels?.toggleShop(),
       startNpcDialogue:   (name, lines) => this.hud.npcDialogue?.start(lines.map((text) => ({ speaker: name, text }))),
       findDrySpawn:       (x, y) => this.findDrySpawn(x, y)
     });
@@ -260,8 +249,8 @@ export class MainScene extends Phaser.Scene {
     // work regardless. The class stays intact for mobile reactivation.
     if (INPUT.ENABLE_ONSCREEN_MENU_BUTTONS) {
       this.menuButtons = new MenuButtons(this, {
-        onToggleInventory: () => this.panels.toggleInventory(),
-        onToggleShop:      () => this.panels.toggleShop()
+        onToggleInventory: () => this.panels?.toggleInventory(),
+        onToggleShop:      () => this.panels?.toggleShop()
       });
     }
 
@@ -292,6 +281,18 @@ export class MainScene extends Phaser.Scene {
     // else in this method depends on `this.intro` being assigned yet, so
     // deferring only this block is safe.
     this.hud.events.once('hud-create-complete', () => {
+      // HUDScene's panels are only valid after its own create() has finished.
+      // Constructing UIPanelController here guarantees the panel refs exist.
+      this.panels = new UIPanelController(
+        {
+          inventoryPanel: this.hud.inventoryPanel,
+          shopPanel:      this.hud.shopPanel,
+          journalPanel:   this.hud.journalPanel
+        },
+        this.fishingSystem,
+        this.uiSound
+      );
+
       if (!this.story.has(StoryFlags.TUTORIAL_DONE)) {
         this.intro = new IntroSequence(
           this,
@@ -484,9 +485,7 @@ export class MainScene extends Phaser.Scene {
     // unrelated scroll (or one intended for a future scrollable panel)
     // can never silently change hotbar selection underneath it.
     const hotbarInputBlocked = (): boolean =>
-      this.hud.inventoryPanel.isOpen ||
-      this.hud.shopPanel.isOpen ||
-      this.hud.journalPanel.isOpen ||
+      (this.panels?.anyOpen ?? false) ||
       (this.intro?.isDialogueOpen ?? false) ||
       (this.hud.npcDialogue?.isActive ?? false);
 
@@ -527,7 +526,7 @@ export class MainScene extends Phaser.Scene {
     });
 
     // J toggles the Fish Journal.
-    keyboard.on('keydown-J', () => this.panels.toggleJournal());
+    keyboard.on('keydown-J', () => this.panels?.toggleJournal());
   }
 
   /**
@@ -658,12 +657,12 @@ export class MainScene extends Phaser.Scene {
   public update(_time: number, delta: number): void {
     if (this.isPaused) return;
 
-    this.panels.handleToggles(this.inputManager);
+    this.panels?.handleToggles(this.inputManager);
     this.environment.update(delta);
     this.combat.update();
     this.journey.update();
 
-    const anyPanelOpen   = this.panels.anyOpen;
+    const anyPanelOpen   = this.panels?.anyOpen ?? false;
     const dialogueOpen    = this.intro?.isDialogueOpen ?? false;
     const npcDialogueOpen = this.hud.npcDialogue?.isActive ?? false;
     const anyDialogueOpen = dialogueOpen || npcDialogueOpen;
