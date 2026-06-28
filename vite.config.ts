@@ -9,5 +9,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     target: 'es2022'
+  },
+  test: {
+    include: ['src/**/*.test.ts'],
+    environment: 'node',
+    typecheck: { tsconfig: './tsconfig.test.json' }
   }
 });
