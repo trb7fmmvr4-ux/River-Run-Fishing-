@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { EventBus } from '../utils/EventBus';
+import { EventBus, createBusSubscription } from '../utils/EventBus';
 import { DialogueBox } from '../ui/DialogueBox';
 import { FishingEvents } from '../systems/FishingSystem';
 import { StoryFlags, type StoryProgress } from '../systems/StoryProgress';
@@ -47,6 +47,7 @@ const INTERACT_RANGE = 26;
  * standing there inertly forever.
  */
 export class IntroSequence {
+  private readonly bus = createBusSubscription();
   private readonly scene: Phaser.Scene;
   private readonly story: StoryProgress;
   private readonly dialogue: DialogueBox;
@@ -285,13 +286,13 @@ export class IntroSequence {
     EventBus.emit(IntroEvents.HINT, 'Left Click to Cast');
 
     // Now wait for the player to actually cast, then bite, then catch.
-    EventBus.once(FishingEvents.CAST, this.onFirstCast, this);
+    this.bus.once(FishingEvents.CAST, this.onFirstCast, this);
   }
 
   private onFirstCast(): void {
     this.story.setFlag(StoryFlags.FIRST_CAST);
     EventBus.emit(IntroEvents.HINT, 'Wait for the bite — then click to hook it!');
-    EventBus.once(FishingEvents.CATCH_SUCCESS, this.onFirstCatch, this);
+    this.bus.once(FishingEvents.CATCH_SUCCESS, this.onFirstCatch, this);
   }
 
   private onFirstCatch(): void {
@@ -373,8 +374,7 @@ export class IntroSequence {
   }
 
   public destroy(): void {
-    EventBus.off(FishingEvents.CAST, this.onFirstCast, this);
-    EventBus.off(FishingEvents.CATCH_SUCCESS, this.onFirstCatch, this);
+    this.bus.dispose();
     this.glanceTimer?.remove();
     this.dialogue.destroy();
     this.fisherman?.destroy();

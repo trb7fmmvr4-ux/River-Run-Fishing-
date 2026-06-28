@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../config/GameConfig';
-import { EventBus } from '../utils/EventBus';
+import { createBusSubscription } from '../utils/EventBus';
 import { center, fitSize } from './ScreenLayout';
 import { ShopEvents } from '../systems/Shop';
 import { GoldEvents } from '../systems/GoldWallet';
@@ -19,6 +19,7 @@ const PANEL_DEPTH = DEPTH.PANEL;
  * coordinate; no per-frame layout pass.
  */
 export class ShopPanel {
+  private readonly bus = createBusSubscription();
   private readonly scene: Phaser.Scene;
   private readonly shop: Shop;
 
@@ -79,9 +80,9 @@ export class ShopPanel {
 
     this.buyButton.on('pointerdown', () => this.handleBuy());
 
-    EventBus.on(ShopEvents.PURCHASED, this.onPurchased, this);
-    EventBus.on(ShopEvents.PURCHASE_FAILED, this.onPurchaseFailed, this);
-    EventBus.on(GoldEvents.CHANGED, this.onGoldChanged, this);
+    this.bus.on(ShopEvents.PURCHASED, this.onPurchased, this);
+    this.bus.on(ShopEvents.PURCHASE_FAILED, this.onPurchaseFailed, this);
+    this.bus.on(GoldEvents.CHANGED, this.onGoldChanged, this);
   }
 
   public get isOpen(): boolean {
@@ -156,9 +157,7 @@ export class ShopPanel {
   }
 
   public destroy(): void {
-    EventBus.off(ShopEvents.PURCHASED, this.onPurchased, this);
-    EventBus.off(ShopEvents.PURCHASE_FAILED, this.onPurchaseFailed, this);
-    EventBus.off(GoldEvents.CHANGED, this.onGoldChanged, this);
+    this.bus.dispose();
     this.background.destroy();
     this.text.destroy();
     this.buyButton.destroy();

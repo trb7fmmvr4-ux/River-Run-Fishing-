@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { DEPTH } from '../config/GameConfig';
 import { Health, HealthEvents } from '../systems/Health';
 import { ArtRegistry } from '../utils/AssetRegistry';
-import { EventBus } from '../utils/EventBus';
+import { createBusSubscription } from '../utils/EventBus';
 
 export interface SlimeOptions {
   x: number;
@@ -30,6 +30,7 @@ export interface SlimeOptions {
 export class Slime extends Phaser.Physics.Arcade.Sprite {
   public readonly health: Health;
   public readonly touchDamage: number;
+  private readonly bus = createBusSubscription();
   private readonly speed: number;
   private readonly aggroRange = 90;
   private aiState: 'idle' | 'chase' | 'dead' = 'idle';
@@ -81,7 +82,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
       .setVisible(false);
 
     this.healthChangedEvent = this.health.eventName(HealthEvents.CHANGED);
-    EventBus.on(this.healthChangedEvent, this.refreshHealthBar, this);
+    this.bus.on(this.healthChangedEvent, this.refreshHealthBar, this);
   }
 
   private refreshHealthBar(): void {
@@ -198,7 +199,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
   }
 
   public destroy(fromScene?: boolean): void {
-    EventBus.off(this.healthChangedEvent, this.refreshHealthBar, this);
+    this.bus.dispose();
     this.healthBarBg.destroy();
     this.healthBarFill.destroy();
     this.fallbackGfx?.destroy();

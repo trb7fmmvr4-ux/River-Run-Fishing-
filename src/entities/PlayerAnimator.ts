@@ -107,7 +107,15 @@ export class PlayerAnimator {
   public get poseShowsHeldItem(): boolean {
     if (!this.hasRealArt) return false;
     const key = this.sprite.anims.currentAnim?.key ?? '';
-    return key.includes('-cast-') || key.includes('-reel-') || key.includes('-attack-');
+    // Also hide during hurt/death — those poses don't show the rod, but
+    // the icon floating on a dying/hurt character looks wrong.
+    return (
+      key.includes('-cast-') ||
+      key.includes('-reel-') ||
+      key.includes('-attack-') ||
+      key.includes('-hurt-') ||
+      key.includes('-death-')
+    );
   }
 
   private animKey(pose: PlayerPose, dir: Direction): string {

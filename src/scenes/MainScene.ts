@@ -28,9 +28,10 @@ import { spawnParticleBurst } from '../utils/ParticleBurst';
 import { Health } from '../systems/Health';
 import { CombatSystem, CombatEvents } from '../systems/CombatSystem';
 import { IntroSequence, IntroEvents } from '../systems/IntroSequence';
-import { VillageNPCs } from '../world/VillageNPCs';
-import { EventBus } from '../utils/EventBus';
+import { createBusSubscription } from '../utils/EventBus';
 import { HUDScene, type HUDSceneData } from './HUDScene';
+import { UIPanelController } from './controllers/UIPanelController';
+import { JourneyDirector } from './controllers/JourneyDirector';
 
 /**
  * The playable scene: a data-driven Zone (ground, water with collision,
@@ -56,6 +57,8 @@ export class MainScene extends Phaser.Scene {
   private hud!: HUDScene;
   /** True while the pause menu is open — gates gameplay updates (movement, fishing, combat) without using Phaser's own scene.pause(), so this scene's own update loop (and the overlay it drives) keeps running. */
   private isPaused = false;
+  private panels!: UIPanelController;
+  private journey!: JourneyDirector;
   private menuButtons?: MenuButtons;
   private journal!: Journal;
   private story!: StoryProgress;
@@ -68,11 +71,7 @@ export class MainScene extends Phaser.Scene {
   private playerHealth!: Health;
   private combat!: CombatSystem;
   private intro?: IntroSequence;
-  private villageNPCs?: VillageNPCs;
-  private slimeEncounterTriggered = false;
-  /** True once the player has attempted at least one swing in the first encounter. */
-  private hasAttemptedFirstSwing = true;
-  private villageReached = false;
+  private readonly bus = createBusSubscription();
   private pendingLoadSlot: number | null = null;
   private boundSaveSlot: number | null = null;
 
@@ -217,13 +216,48 @@ export class MainScene extends Phaser.Scene {
     this.wireFirstPlayable();
     this.wireLoopContent();
 
+    // Panel controller: enforces single-panel-at-a-time and mid-cast gating.
+    this.panels = new UIPanelController(
+      {
+        inventoryPanel: this.hud.inventoryPanel,
+        shopPanel:      this.hud.shopPanel,
+        journalPanel:   this.hud.journalPanel
+      },
+      this.fishingSystem,
+      this.uiSound
+    );
+
+    // Journey director: owns spatial story triggers, village lifecycle,
+    // zone-edge transitions, and player death/respawn.
+    this.journey = new JourneyDirector({
+      scene:              this,
+      player:             this.player,
+      getZone:            () => this.zone,
+      getCurrentZoneId:   () => this.currentZoneId,
+      story:              this.story,
+      combat:             this.combat,
+      fishing:            this.fishingSystem,
+      fishingHUD:         this.fishingHUD,
+      notifications:      { push: (t, v) => this.hud.notifications.push(t, v) },
+      playerHealthHUD:    { show: () => this.hud.playerHealthHUD.show() },
+      playerHealth:       this.playerHealth,
+      getIntro:           () => this.intro,
+      getSaveableSystems: () => this.saveableSystems(),
+      getBoundSaveSlot:   () => this.boundSaveSlot,
+      setBoundSaveSlot:   (s) => { this.boundSaveSlot = s; },
+      transitionToZone:   (id, opts) => this.transitionToZone(id, opts),
+      openShop:           () => this.panels.toggleShop(),
+      startNpcDialogue:   (name, lines) => this.hud.npcDialogue?.start(lines.map((text) => ({ speaker: name, text }))),
+      findDrySpawn:       (x, y) => this.findDrySpawn(x, y)
+    });
+
     // On-screen menu toggles (kept for touch / as click fallback). Gated
     // by config so the desktop layout can hide them; keyboard I/B always
     // work regardless. The class stays intact for mobile reactivation.
     if (INPUT.ENABLE_ONSCREEN_MENU_BUTTONS) {
       this.menuButtons = new MenuButtons(this, {
-        onToggleInventory: () => this.toggleInventoryPanel(),
-        onToggleShop: () => this.toggleShopPanel()
+        onToggleInventory: () => this.panels.toggleInventory(),
+        onToggleShop:      () => this.panels.toggleShop()
       });
     }
 
@@ -270,11 +304,9 @@ export class MainScene extends Phaser.Scene {
       }
     });
 
-    // If a loaded save had already progressed, reflect that in the live
-    // scene so the player resumes where they left off.
-    if (this.story.has(StoryFlags.FIRST_SLIME)) {
-      this.slimeEncounterTriggered = true; // don't re-trigger a cleared fight
-    }
+    // Reflect saved progression flags before the first frame so the journey
+    // director doesn't re-trigger already-cleared story beats on load.
+    this.journey.restoreFromSave();
 
     // If the save was in a different (unlocked) zone, build that zone now
     // instead of the beach. Done instantly (no fade) since this is the
@@ -288,12 +320,8 @@ export class MainScene extends Phaser.Scene {
       }
     }
 
-    // The village lives in the beach zone, so only populate it when the
-    // player is actually there (e.g. loaded onto the beach, not upriver).
-    if (this.story.has(StoryFlags.REACHED_VILLAGE) && canonicalZoneId(this.currentZoneId) === 'beach') {
-      this.villageReached = true;
-      this.spawnVillage();
-    }
+    // Re-populate the beach village if the save had already reached it.
+    this.journey.restoreVillageIfNeeded();
 
     this.registerSystemKeys();
 
@@ -323,34 +351,33 @@ export class MainScene extends Phaser.Scene {
    */
   private wireFirstPlayable(): void {
     // Tutorial hints surface through the existing HUD message banner.
-    EventBus.on(IntroEvents.HINT, (text: string) => this.fishingHUD.flashSystemMessage(text), this);
+    this.bus.on(IntroEvents.HINT, (text: string) => this.fishingHUD.flashSystemMessage(text), this);
 
     // When the intro completes, reveal health and arm the slime encounter.
-    EventBus.on(IntroEvents.COMPLETE, () => this.hud.playerHealthHUD.show(), this);
+    this.bus.on(IntroEvents.COMPLETE, () => this.hud.playerHealthHUD.show(), this);
 
     // Combat outcomes.
-    EventBus.on(CombatEvents.ENCOUNTER_CLEARED, this.onEncounterCleared, this);
-    EventBus.on(
+    this.bus.on(CombatEvents.ENCOUNTER_CLEARED, () => this.journey.onEncounterCleared(), this);
+    this.bus.on(
       CombatEvents.PLAYER_ATTACK,
       () => {
-        this.hasAttemptedFirstSwing = true;
+        this.journey.markSwingAttempted();
         this.player.animator.playAttack();
       },
       this
     );
-    EventBus.on(
+    this.bus.on(
       CombatEvents.PLAYER_HURT,
       () => {
         this.cameras.main.flash(120, 120, 20, 20);
         if (!this.playerHealth.isDead) this.player.animator.playHurt();
         // Reinforce the "how to fight" hint if the player is taking hits
         // without having tried swinging yet — they likely missed or
-        // dismissed the original hint. Only during the first encounter;
-        // never if they've already swung at least once.
-        if (this.combat.isActive && !this.hasAttemptedFirstSwing) {
+        // dismissed the original hint. Only during the first encounter.
+        if (this.combat.isActive && !this.journey.hasAttemptedSwing) {
           this.fishingHUD.flashSystemMessage('Click to swing your rod!', 2500);
         }
-        if (this.playerHealth.isDead) this.onPlayerDefeated();
+        if (this.playerHealth.isDead) this.journey.onPlayerDefeated();
       },
       this
     );
@@ -362,10 +389,10 @@ export class MainScene extends Phaser.Scene {
     // rod visible while a line is out" requirement with the art that
     // actually exists (no dedicated fishing-idle pose, so holding cast's
     // last frame is the closest approximation).
-    EventBus.on(FishingEvents.CAST, () => this.player.animator.playAndHold('cast'), this);
-    EventBus.on(FishingEvents.CATCH_SUCCESS, () => this.player.animator.playReel(), this);
-    EventBus.on(FishingEvents.CATCH_FAILURE, () => this.player.animator.playReel(), this);
-    EventBus.on(FishingEvents.CANCELLED, () => this.player.animator.release(), this);
+    this.bus.on(FishingEvents.CAST, () => this.player.animator.playAndHold('cast'), this);
+    this.bus.on(FishingEvents.CATCH_SUCCESS, () => this.player.animator.playReel(), this);
+    this.bus.on(FishingEvents.CATCH_FAILURE, () => this.player.animator.playReel(), this);
+    this.bus.on(FishingEvents.CANCELLED, () => this.player.animator.release(), this);
   }
 
   /**
@@ -374,7 +401,7 @@ export class MainScene extends Phaser.Scene {
    * themselves own the logic; this only narrates it to the player.
    */
   private wireLoopContent(): void {
-    EventBus.on(
+    this.bus.on(
       ProgressionEvents.LEVEL_UP,
       (p: { skill: string; level: number }) => {
         const skill = p.skill.charAt(0).toUpperCase() + p.skill.slice(1);
@@ -382,7 +409,7 @@ export class MainScene extends Phaser.Scene {
       },
       this
     );
-    EventBus.on(
+    this.bus.on(
       QuestEvents.COMPLETED,
       (q: { name: string; reward: { gold?: number } }) => {
         const goldPart = q.reward.gold ? ` (+${q.reward.gold}g)` : '';
@@ -392,12 +419,12 @@ export class MainScene extends Phaser.Scene {
       },
       this
     );
-    EventBus.on(
+    this.bus.on(
       QuestEvents.STARTED,
       (q: { name: string; summary: string }) => this.hud.notifications.push(`Quest Accepted: ${q.name} — ${q.summary}`, 'info'),
       this
     );
-    EventBus.on(
+    this.bus.on(
       JournalEvents.RECORDED,
       (r: { fish: { name: string }; isRecord: boolean; weightKg: number }) => {
         if (r.isRecord) {
@@ -406,9 +433,7 @@ export class MainScene extends Phaser.Scene {
       },
       this
     );
-    // New species discovered — a notable moment, and a journal-completion
-    // nudge when it rounds a milestone.
-    EventBus.on(
+    this.bus.on(
       JournalEvents.DISCOVERED,
       (fish: { name: string }) => {
         const s = this.journal.stats();
@@ -416,21 +441,19 @@ export class MainScene extends Phaser.Scene {
       },
       this
     );
-    // Environment feedback: time-of-day and weather shifts.
-    EventBus.on(
+    this.bus.on(
       EnvironmentEvents.TIME_CHANGED,
       (t: import('../systems/Environment').TimeOfDay) =>
         this.hud.notifications.push(`${timeOfDayLabel(t)} settles over the water`, 'info'),
       this
     );
-    EventBus.on(
+    this.bus.on(
       EnvironmentEvents.WEATHER_CHANGED,
       (w: import('../systems/Environment').Weather) =>
         this.hud.notifications.push(`Weather: ${weatherLabel(w)}`, 'info'),
       this
     );
-    // Bait selection feedback.
-    EventBus.on(
+    this.bus.on(
       BaitEvents.CHANGED,
       (id: string) => {
         const name = getBait(id)?.name ?? 'No Bait';
@@ -483,7 +506,11 @@ export class MainScene extends Phaser.Scene {
       const slot = this.boundSaveSlot ?? 0;
       const ok = SaveSystem.save(slot, this.saveableSystems());
       this.boundSaveSlot = slot;
-      if (ok) this.fishingHUD.flashSystemMessage?.('Game saved');
+      if (ok) {
+        this.fishingHUD.flashSystemMessage?.('Game saved');
+      } else {
+        this.hud.notifications.push('Save failed — check storage.', 'warning');
+      }
     });
 
     keyboard.on('keydown-ESC', () => {
@@ -495,8 +522,8 @@ export class MainScene extends Phaser.Scene {
       }
     });
 
-    // J toggles the Fish Journal (Phase 7 — accessible from the UI).
-    keyboard.on('keydown-J', () => this.toggleJournalPanel());
+    // J toggles the Fish Journal.
+    keyboard.on('keydown-J', () => this.panels.toggleJournal());
   }
 
   /**
@@ -555,14 +582,10 @@ export class MainScene extends Phaser.Scene {
     const camera = this.cameras.main;
     camera.fadeOut(220, 0, 0, 0);
     camera.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      // 1) Tear down the old world. Village NPCs aren't owned by the Zone,
-      // so dispose them here (they belong to the beach and are re-spawned
-      // below if we're arriving back on the beach). The dialogue box
-      // itself is a generic, reusable HUDScene utility (not zone-specific
-      // content), so it persists across zone transitions untouched.
+      // 1) Tear down the old world. Village NPCs are owned by JourneyDirector;
+      // destroy through it so its state stays consistent.
       this.zone.destroy(this);
-      this.villageNPCs?.destroy();
-      this.villageNPCs = undefined;
+      this.journey.destroyVillageNPCs();
 
       // 2) Build the new one (mirrors the create() world-build sequence).
       this.zone = new Zone(getZoneDefinition(targetId));
@@ -583,11 +606,8 @@ export class MainScene extends Phaser.Scene {
 
       this.currentZoneId = targetId;
 
-      // 5) If we've arrived back on the beach and the village was reached,
-      // re-populate it (it's a beach-zone fixture).
-      if (targetId === 'beach' && this.villageReached) {
-        this.spawnVillage();
-      }
+      // 5) Re-populate the beach village if returning to it (beach-zone fixture).
+      this.journey.restoreVillageAfterTransition(targetId);
 
       camera.fadeIn(220, 0, 0, 0);
       this.hud.notifications.push(`Entering ${this.zone.name}`, 'info');
@@ -630,78 +650,50 @@ export class MainScene extends Phaser.Scene {
   }
 
   public update(_time: number, delta: number): void {
-    if (this.isPaused) {
-      return;
-    }
+    if (this.isPaused) return;
 
-    this.handlePanelToggles();
-
-    // Advance the day cycle + weather (events fire on period/weather change).
+    this.panels.handleToggles(this.inputManager);
     this.environment.update(delta);
-
-    // Drive new systems (no effect on fishing/movement logic).
     this.combat.update();
-    this.checkJourneyTriggers();
-    this.intro?.update(this.player);
+    this.journey.update();
 
-    const anyPanelOpen = this.hud.inventoryPanel.isOpen || this.hud.shopPanel.isOpen || this.hud.journalPanel.isOpen;
-    const dialogueOpen = this.intro?.isDialogueOpen ?? false;
+    const anyPanelOpen   = this.panels.anyOpen;
+    const dialogueOpen    = this.intro?.isDialogueOpen ?? false;
     const npcDialogueOpen = this.hud.npcDialogue?.isActive ?? false;
     const anyDialogueOpen = dialogueOpen || npcDialogueOpen;
 
-    // Always consumed every frame regardless of the gating below, so a
-    // press that happens to land while a panel/dialogue is open is fully
-    // drained here and can never leak into a later frame as a stale,
-    // unintended tool-use once the panel closes.
-    const useToolPressed = this.inputManager.isUseToolJustPressed();
+    // Always consumed every frame regardless of gating below so a press
+    // that lands while a panel/dialogue is open is drained here and can
+    // never leak into a later frame as a stale tool-use.
+    const useToolPressed  = this.inputManager.isUseToolJustPressed();
     const interactPressed = this.inputManager.isInteractJustPressed();
 
     // Interaction priority:
-    //   1. Active UI (panels) — handled by the panels themselves; nothing here.
-    //   2. Dialogue — advances on its own input; nothing here either.
-    //   3. Interactable object (E) — talk to an NPC.
+    //   1. Active UI (panels) — handled by the panels themselves.
+    //   2. Dialogue — advances on its own input.
+    //   3. Interactable NPC (E) — routed through JourneyDirector.
     //   4. Equipped tool (Left Mouse) — whatever the hotbar has selected.
     //   5. Passive gameplay (movement, below).
-    // E and "use tool" are separate signals on purpose — this is the fix
-    // for the input-conflict bug where a press meant to attack could fall
-    // through into fishing and show a fishing-only message. Each system
-    // now only ever responds to the signal that's actually meant for it.
     if (!anyPanelOpen && !anyDialogueOpen) {
-      if (interactPressed && this.villageNPCs?.hasInteractable()) {
-        const talk = this.villageNPCs.interact();
-        if (talk && this.hud.npcDialogue) {
-          this.hud.npcDialogue.start(talk.lines.map((text) => ({ speaker: talk.name, text })));
-        }
-        this.showHintOnce(StoryFlags.HINT_INTERACT_SHOWN, 'E to Interact');
-      } else if (interactPressed && this.intro?.hasInteractable()) {
-        this.intro.interact();
+      if (interactPressed && this.journey.handleInteract()) {
         this.showHintOnce(StoryFlags.HINT_INTERACT_SHOWN, 'E to Interact');
       } else if (useToolPressed) {
         this.equipment.useEquipped();
       }
     }
 
-    // Hold position while a panel is open or any dialogue is showing —
-    // reusing Player's existing drag-to-stop behavior instead of adding
-    // any new movement logic. Fishing no longer holds position: walking
-    // away while a cast is out is how the player cancels it (below).
     const shouldHoldPosition = anyPanelOpen || anyDialogueOpen;
     const movementIntent = shouldHoldPosition ? { x: 0, y: 0 } : this.inputManager.getMovementIntent();
     if (movementIntent.x !== 0 || movementIntent.y !== 0) {
       this.showHintOnce(StoryFlags.HINT_MOVE_SHOWN, 'WASD to Move');
     }
 
-    // Walking away from a cast cancels it — the rod and line stay out
-    // until a catch resolves, the player cancels, or (here) they move.
     if (this.fishingSystem.isActive && (movementIntent.x !== 0 || movementIntent.y !== 0)) {
       this.fishingSystem.cancel();
     }
 
-    // SOFT collision (bushes, tall grass) and sprint both scale movement
-    // speed; they stack (sprinting through a bush is faster than walking
-    // through one, but still slower than sprinting on open ground).
     const inSoftZone = this.zone.isInSoftZone(this.player.x, this.player.y);
-    const sprinting = this.inputManager.isSprintDown();
+    const sprinting  = this.inputManager.isSprintDown();
     const speedMultiplier = (inSoftZone ? 0.55 : 1) * (sprinting ? PLAYER.SPRINT_MULTIPLIER : 1);
     this.player.applyMovement(movementIntent, delta, speedMultiplier);
 
@@ -709,116 +701,12 @@ export class MainScene extends Phaser.Scene {
     this.hud.debugOverlay.setFishingState(this.fishingSystem.currentState);
     this.hud.debugOverlay.setEntityCount(this.combat.activeSlimeCount);
     this.fishingHUD.update();
-    this.villageNPCs?.update(this.player);
     this.menuButtons?.update();
 
-    // Gated on RECEIVED_ROD so the held-rod icon never appears before the
-    // handover sequence actually grants it — showing it earlier would
-    // undercut that moment.
     if (this.story.has(StoryFlags.RECEIVED_ROD)) {
       this.heldVisual.setEquippedTool(this.equipment.equippedTool?.id);
       this.heldVisual.update(this.player as unknown as { x: number; y: number }, this.player.animator);
     }
-  }
-
-  /**
-   * Spatial story triggers along the beach→village route: once the
-   * tutorial is done, walking east past a threshold spawns the first slime
-   * encounter; reaching the far east "village gate" marks arrival. Both
-   * fire once. Purely additive — reads player position, drives new systems.
-   *
-   * Also handles zone-edge transitions: walking off the appropriate edge of
-   * a zone travels to the connected zone (once it's unlocked).
-   */
-  private checkJourneyTriggers(): void {
-    // Beach-only story beats (slime encounter + village arrival).
-    if (canonicalZoneId(this.currentZoneId) === 'beach' && this.story.has(StoryFlags.TUTORIAL_DONE)) {
-      const slimeGate = this.zone.widthPx * 0.55;
-      if (!this.slimeEncounterTriggered && this.player.x >= slimeGate) {
-        this.slimeEncounterTriggered = true;
-        this.story.setFlag(StoryFlags.FIRST_SLIME);
-        this.hud.playerHealthHUD.show();
-        // Held much longer than the default toast — this is the player's
-        // very first combat encounter and the only explanation of how to
-        // fight back, so it needs real reading time, not a quick flash.
-        this.fishingHUD.flashSystemMessage('A slime blocks the path! Swing your rod (Click)', 4000);
-        this.hasAttemptedFirstSwing = false;
-        this.combat.startEncounter([
-          { x: this.player.x + 40, y: this.player.y - 6 },
-          { x: this.player.x + 54, y: this.player.y + 10 }
-        ]);
-      }
-
-      const villageGate = this.zone.widthPx * 0.9;
-      if (
-        !this.villageReached &&
-        this.story.has(StoryFlags.FIRST_SLIME) &&
-        !this.combat.isActive &&
-        this.player.x >= villageGate
-      ) {
-        this.onReachVillage();
-      }
-    }
-
-    this.checkZoneEdgeTransitions();
-  }
-
-  /**
-   * Zone-to-zone travel by walking off a connecting edge. Kept data-light
-   * for now (a small hardcoded adjacency for the two playable zones); future
-   * zones can graduate this to a connections table in ZoneData. Guarded so
-   * it can't fire mid-encounter or before the destination is unlocked.
-   */
-  private checkZoneEdgeTransitions(): void {
-    if (this.combat.isActive || this.fishingSystem.isActive) return;
-    const here = canonicalZoneId(this.currentZoneId);
-
-    // Beach east edge → Forest River (once the 'Upriver' quest unlocked it).
-    if (here === 'beach' && this.story.isZoneUnlocked('forest-river')) {
-      if (this.player.x >= this.zone.widthPx - 6) {
-        // Enter forest-river from its west side.
-        this.transitionToZone('forest-river', { spawnX: 24, spawnY: this.zone.heightPx / 2 });
-      }
-    }
-
-    // Forest River west edge → back to the Beach (enter from the east side).
-    if (here === 'forest-river') {
-      if (this.player.x <= 6) {
-        this.transitionToZone('beach', { spawnX: this.zone.widthPx * 0.85, spawnY: this.zone.heightPx / 2 });
-      }
-    }
-  }
-
-  private onEncounterCleared(): void {
-    this.fishingHUD.flashSystemMessage('Victory! The path is clear. Onward to the village.');
-    this.playerHealth.heal(1);
-    // Autosave the milestone to the bound slot (or slot 0 for a fresh Play).
-    const slot = this.boundSaveSlot ?? 0;
-    SaveSystem.save(slot, this.saveableSystems());
-    this.boundSaveSlot = slot;
-  }
-
-  private onReachVillage(): void {
-    this.villageReached = true;
-    this.story.setFlag(StoryFlags.REACHED_VILLAGE);
-    this.story.unlockZone('village');
-    this.fishingHUD.flashSystemMessage('You reached Riverside Village — a safe haven.');
-    // Full heal on reaching the safe zone; autosave arrival.
-    this.playerHealth.restoreFull();
-    this.spawnVillage();
-    const slot = this.boundSaveSlot ?? 0;
-    SaveSystem.save(slot, this.saveableSystems());
-    this.boundSaveSlot = slot;
-  }
-
-  /** Spawn the village residents (shopkeeper/fisherman/villager) near the gate. */
-  private spawnVillage(): void {
-    if (this.villageNPCs) return;
-    const originX = Math.min(this.zone.widthPx - 30, this.player.x + 30);
-    const originY = this.player.y;
-    this.villageNPCs = new VillageNPCs(this, originX, originY, {
-      onOpenShop: () => this.toggleShopPanel()
-    });
   }
 
   /** Close the pause overlay and let gameplay updates resume. */
@@ -827,7 +715,7 @@ export class MainScene extends Phaser.Scene {
     this.hud.pauseOverlay.hide();
   }
 
-  /** The pause menu's "Quit to Menu" — the same autosave + fade behaviour Esc used to do immediately. */
+  /** The pause menu's "Quit to Menu" — autosave then fade to the main menu. */
   private quitToMenu(): void {
     if (this.boundSaveSlot !== null) {
       SaveSystem.save(this.boundSaveSlot, this.saveableSystems());
@@ -836,69 +724,6 @@ export class MainScene extends Phaser.Scene {
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(SCENE_KEYS.MENU);
     });
-  }
-
-  private onPlayerDefeated(): void {
-    // Gentle, fair failure: brief fade, respawn at the start with full
-    // health, encounter reset. No gold loss in this first slice.
-    //
-    // Cancel any in-progress cast first — dying while fishing is a real
-    // scenario now that fishing no longer freezes movement (a slime can
-    // reach the player while they're standing still waiting for a bite).
-    // Without this, the bobber/line would stay visible at the old spot
-    // after the player respawns elsewhere, and FishingSystem's pending
-    // bite/reaction timers would keep running through the death sequence.
-    this.fishingSystem.cancel();
-    this.player.animator.playDeath();
-    this.cameras.main.fadeOut(260, 0, 0, 0);
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      const spawn = this.findDrySpawn(this.zone.widthPx / 2, this.zone.heightPx / 2);
-      this.player.setPosition(spawn.x, spawn.y);
-      this.playerHealth.restoreFull();
-      this.slimeEncounterTriggered = false;
-      this.player.animator.respawn();
-      this.cameras.main.fadeIn(260, 0, 0, 0);
-      this.fishingHUD.flashSystemMessage('You wake back on the shore, unharmed.');
-    });
-  }
-
-  private handlePanelToggles(): void {
-    if (this.inputManager.isInventoryToggleJustPressed()) {
-      this.toggleInventoryPanel();
-    }
-
-    if (this.inputManager.isShopToggleJustPressed()) {
-      this.toggleShopPanel();
-    }
-  }
-
-  // Only one panel at a time, and neither can be opened mid-cast (so the
-  // reaction bar is never hidden behind a panel) — but either can always
-  // be closed regardless of fishing state.
-  private toggleInventoryPanel(): void {
-    if (this.hud.shopPanel.isOpen) return;
-    if (!this.hud.inventoryPanel.isOpen && this.fishingSystem.isActive) return;
-    this.uiSound.playClick();
-    this.hud.inventoryPanel.toggle();
-  }
-
-  private toggleShopPanel(): void {
-    if (this.hud.inventoryPanel.isOpen) return;
-    if (!this.hud.shopPanel.isOpen && this.fishingSystem.isActive) return;
-    this.uiSound.playClick();
-    this.hud.shopPanel.toggle();
-  }
-
-  private toggleJournalPanel(): void {
-    // Journal can open any time except mid-cast (so the reaction bar isn't
-    // hidden); close any other open panel first to keep one-at-a-time.
-    if (!this.hud.journalPanel.isOpen) {
-      if (this.fishingSystem.isActive) return;
-      if (this.hud.inventoryPanel.isOpen) this.hud.inventoryPanel.toggle();
-      if (this.hud.shopPanel.isOpen) this.hud.shopPanel.toggle();
-    }
-    this.uiSound.playClick();
-    this.hud.journalPanel.toggle();
   }
 
   private handleShutdown(): void {
@@ -914,7 +739,7 @@ export class MainScene extends Phaser.Scene {
     this.combat?.destroy();
     this.heldVisual?.destroy();
     this.intro?.destroy();
-    this.villageNPCs?.destroy();
+    this.journey?.destroy();
     // Loop-content systems.
     this.progression?.destroy();
     this.quests?.destroy();
@@ -924,22 +749,6 @@ export class MainScene extends Phaser.Scene {
     // shutdown should). Stopping it here triggers HUDScene's own
     // SHUTDOWN handler, which destroys every UI element it owns.
     this.scene.stop(SCENE_KEYS.HUD);
-    EventBus.off(IntroEvents.HINT, undefined, this);
-    EventBus.off(IntroEvents.COMPLETE, undefined, this);
-    EventBus.off(CombatEvents.ENCOUNTER_CLEARED, this.onEncounterCleared, this);
-    EventBus.off(CombatEvents.PLAYER_ATTACK, undefined, this);
-    EventBus.off(CombatEvents.PLAYER_HURT, undefined, this);
-    EventBus.off(FishingEvents.CAST, undefined, this);
-    EventBus.off(FishingEvents.CATCH_SUCCESS, undefined, this);
-    EventBus.off(FishingEvents.CATCH_FAILURE, undefined, this);
-    EventBus.off(FishingEvents.CANCELLED, undefined, this);
-    EventBus.off(ProgressionEvents.LEVEL_UP, undefined, this);
-    EventBus.off(QuestEvents.COMPLETED, undefined, this);
-    EventBus.off(QuestEvents.STARTED, undefined, this);
-    EventBus.off(JournalEvents.RECORDED, undefined, this);
-    EventBus.off(JournalEvents.DISCOVERED, undefined, this);
-    EventBus.off(EnvironmentEvents.TIME_CHANGED, undefined, this);
-    EventBus.off(EnvironmentEvents.WEATHER_CHANGED, undefined, this);
-    EventBus.off(BaitEvents.CHANGED, undefined, this);
+    this.bus.dispose();
   }
 }

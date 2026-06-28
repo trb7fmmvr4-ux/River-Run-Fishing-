@@ -1,4 +1,4 @@
-import { EventBus } from '../utils/EventBus';
+import { EventBus, createBusSubscription } from '../utils/EventBus';
 import { FishingEvents } from './FishingSystem';
 import { ShopEvents } from './Shop';
 import { CombatEvents } from './CombatSystem';
@@ -40,6 +40,7 @@ interface QuestRuntime {
  * gate turn-in on talking to the giver.
  */
 export class QuestSystem {
+  private readonly bus = createBusSubscription();
   private readonly quests = new Map<string, QuestRuntime>();
   private readonly gold: GoldWallet;
   private readonly story: StoryProgress;
@@ -58,10 +59,10 @@ export class QuestSystem {
     this.story = story;
     this.inventory = inventory;
 
-    EventBus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
-    EventBus.on(ShopEvents.SOLD, this.onSold, this);
-    EventBus.on(CombatEvents.ENEMY_DEFEATED, this.onDefeat, this);
-    EventBus.on(StoryEvents.FLAG_SET, this.onFlag, this);
+    this.bus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
+    this.bus.on(ShopEvents.SOLD, this.onSold, this);
+    this.bus.on(CombatEvents.ENEMY_DEFEATED, this.onDefeat, this);
+    this.bus.on(StoryEvents.FLAG_SET, this.onFlag, this);
 
     for (const def of STARTER_QUESTS) {
       // Offer quests with no prerequisite immediately.
@@ -198,9 +199,6 @@ export class QuestSystem {
   }
 
   public destroy(): void {
-    EventBus.off(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
-    EventBus.off(ShopEvents.SOLD, this.onSold, this);
-    EventBus.off(CombatEvents.ENEMY_DEFEATED, this.onDefeat, this);
-    EventBus.off(StoryEvents.FLAG_SET, this.onFlag, this);
+    this.bus.dispose();
   }
 }

@@ -1,4 +1,4 @@
-import { EventBus } from '../utils/EventBus';
+import { EventBus, createBusSubscription } from '../utils/EventBus';
 import { FISH_TABLE, rollFishMeasurements, type FishDefinition } from '../data/FishData';
 import { FishingEvents } from './FishingSystem';
 
@@ -46,6 +46,7 @@ export interface JournalCatchContext {
  * record map going forward.
  */
 export class Journal {
+  private readonly bus = createBusSubscription();
   private readonly records = new Map<string, JournalRecord>();
   /**
    * When true, catch events are ignored. The save system sets this around
@@ -59,7 +60,7 @@ export class Journal {
   private contextProvider?: () => JournalCatchContext;
 
   constructor() {
-    EventBus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
+    this.bus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
   }
 
   /** Wire a discovery-context source. Optional + additive. */
@@ -199,6 +200,6 @@ export class Journal {
   }
 
   public destroy(): void {
-    EventBus.off(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
+    this.bus.dispose();
   }
 }

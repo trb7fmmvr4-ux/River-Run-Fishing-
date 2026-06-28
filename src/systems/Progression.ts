@@ -1,4 +1,4 @@
-import { EventBus } from '../utils/EventBus';
+import { EventBus, createBusSubscription } from '../utils/EventBus';
 import { FishingEvents } from './FishingSystem';
 import { CombatEvents } from './CombatSystem';
 import type { FishDefinition, FishRarity } from '../data/FishData';
@@ -50,6 +50,7 @@ export interface ProgressionState {
  * progression data.
  */
 export class Progression {
+  private readonly bus = createBusSubscription();
   private readonly skills: Record<SkillId, SkillState> = {
     fishing: { level: 1, xp: 0 },
     combat: { level: 1, xp: 0 },
@@ -65,8 +66,8 @@ export class Progression {
   private restoring = false;
 
   constructor() {
-    EventBus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
-    EventBus.on(CombatEvents.ENEMY_DEFEATED, this.onEnemyDefeated, this);
+    this.bus.on(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
+    this.bus.on(CombatEvents.ENEMY_DEFEATED, this.onEnemyDefeated, this);
   }
 
   /** Toggle restore mode (suspends event-driven XP). Used by SaveSystem. */
@@ -144,7 +145,6 @@ export class Progression {
   }
 
   public destroy(): void {
-    EventBus.off(FishingEvents.CATCH_SUCCESS, this.onCatch, this);
-    EventBus.off(CombatEvents.ENEMY_DEFEATED, this.onEnemyDefeated, this);
+    this.bus.dispose();
   }
 }

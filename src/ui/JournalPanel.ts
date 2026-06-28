@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH, UI_THEME } from '../config/GameConfig';
-import { EventBus } from '../utils/EventBus';
+import { createBusSubscription } from '../utils/EventBus';
 import { center, fitSize } from './ScreenLayout';
 import { JournalEvents } from '../systems/Journal';
 import type { Journal, JournalRecord } from '../systems/Journal';
@@ -23,6 +23,7 @@ const COLUMN_GAP = 14;
  */
 export class JournalPanel {
   private readonly journal: Journal;
+  private readonly bus = createBusSubscription();
   private readonly background: Phaser.GameObjects.Graphics;
   private readonly header: Phaser.GameObjects.Text;
   private readonly bodyLeft: Phaser.GameObjects.Text;
@@ -82,7 +83,7 @@ export class JournalPanel {
       .setDepth(PANEL_DEPTH)
       .setVisible(false);
 
-    EventBus.on(JournalEvents.CHANGED, this.refresh, this);
+    this.bus.on(JournalEvents.CHANGED, this.refresh, this);
   }
 
   public get isOpen(): boolean {
@@ -148,7 +149,7 @@ export class JournalPanel {
   }
 
   public destroy(): void {
-    EventBus.off(JournalEvents.CHANGED, this.refresh, this);
+    this.bus.dispose();
     this.background.destroy();
     this.header.destroy();
     this.bodyLeft.destroy();

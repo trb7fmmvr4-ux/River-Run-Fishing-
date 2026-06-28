@@ -19,10 +19,14 @@ const HELD_ITEM_REGISTRY: Record<string, HeldItemConfig> = {
   fishing_rod: {
     icon: '\u{1F3A3}',
     offsets: {
-      down: { x: 8, y: -11, rotation: 0.3 },
-      up: { x: -8, y: -11, rotation: -0.3 },
-      left: { x: -9, y: -11, rotation: -0.5 },
-      right: { x: 9, y: -11, rotation: 0.5 }
+      // y=-4 places the icon at chest/hand level on a 24×32 sprite whose
+      // origin is (0.5,0.5) — the old y=-11 landed near the top of the head.
+      // 'up' is a pixel or two higher because the sprite's arm reaches back
+      // and up when facing away.
+      down:  { x: 8,  y: -4, rotation:  0.3 },
+      up:    { x: -8, y: -6, rotation: -0.3 },
+      left:  { x: -9, y: -4, rotation: -0.5 },
+      right: { x: 9,  y: -4, rotation:  0.5 }
     }
   }
 };

@@ -1,4 +1,4 @@
-import { EventBus } from '../utils/EventBus';
+import { EventBus, createBusSubscription } from '../utils/EventBus';
 import { FishingEvents } from './FishingSystem';
 import { Inventory } from './Inventory';
 import { FISH_TABLE, type FishDefinition } from '../data/FishData';
@@ -29,10 +29,11 @@ const FISH_BY_ID = new Map<string, FishDefinition>(FISH_TABLE.map((fish) => [fis
  */
 export class Cooler {
   private readonly storage: Inventory;
+  private readonly bus = createBusSubscription();
 
   constructor(initialCapacity: number) {
     this.storage = new Inventory(initialCapacity);
-    EventBus.on(FishingEvents.CATCH_SUCCESS, this.onCatchSuccess, this);
+    this.bus.on(FishingEvents.CATCH_SUCCESS, this.onCatchSuccess, this);
   }
 
   public get count(): number {
@@ -97,6 +98,6 @@ export class Cooler {
   }
 
   public destroy(): void {
-    EventBus.off(FishingEvents.CATCH_SUCCESS, this.onCatchSuccess, this);
+    this.bus.dispose();
   }
 }
