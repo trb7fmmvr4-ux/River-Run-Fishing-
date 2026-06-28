@@ -32,6 +32,7 @@ import { createBusSubscription } from '../utils/EventBus';
 import { HUDScene, type HUDSceneData } from './HUDScene';
 import { UIPanelController } from './controllers/UIPanelController';
 import { JourneyDirector } from './controllers/JourneyDirector';
+import { ZoneDebugOverlay } from '../debug/ZoneDebugOverlay';
 
 /**
  * The playable scene: a data-driven Zone (ground, water with collision,
@@ -71,6 +72,7 @@ export class MainScene extends Phaser.Scene {
   private playerHealth!: Health;
   private combat!: CombatSystem;
   private intro?: IntroSequence;
+  private zoneDebug!: ZoneDebugOverlay;
   private readonly bus = createBusSubscription();
   private pendingLoadSlot: number | null = null;
   private boundSaveSlot: number | null = null;
@@ -94,6 +96,8 @@ export class MainScene extends Phaser.Scene {
   public create(): void {
     this.zone = new Zone(getZoneDefinition(STARTING_ZONE_ID));
     const { widthPx, heightPx } = this.zone.build(this);
+    this.zoneDebug = new ZoneDebugOverlay(this);
+    this.zoneDebug.refresh(this, this.zone);
 
     this.physics.world.setBounds(0, 0, widthPx, heightPx);
 
@@ -609,6 +613,7 @@ export class MainScene extends Phaser.Scene {
       // 5) Re-populate the beach village if returning to it (beach-zone fixture).
       this.journey.restoreVillageAfterTransition(targetId);
 
+      this.zoneDebug.refresh(this, this.zone);
       camera.fadeIn(220, 0, 0, 0);
       this.hud.notifications.push(`Entering ${this.zone.name}`, 'info');
 
@@ -647,6 +652,7 @@ export class MainScene extends Phaser.Scene {
     this.zone.enableWaterCollision(this, this.player, () => this.onSolidBump());
     this.cameras.main.setBounds(0, 0, widthPx, heightPx);
     this.currentZoneId = targetId;
+    this.zoneDebug.refresh(this, this.zone);
   }
 
   public update(_time: number, delta: number): void {
@@ -744,6 +750,7 @@ export class MainScene extends Phaser.Scene {
     this.progression?.destroy();
     this.quests?.destroy();
     this.uiSound?.destroy();
+    this.zoneDebug?.destroy();
     // HUDScene runs alongside this scene and is never stopped on its own
     // (zone transitions don't touch it — only this scene's own full
     // shutdown should). Stopping it here triggers HUDScene's own

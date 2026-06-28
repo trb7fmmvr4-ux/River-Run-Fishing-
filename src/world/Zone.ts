@@ -171,6 +171,21 @@ export class Zone {
     return this.fishingPx.some((rect) => rect.contains(x, y));
   }
 
+  /** Snapshot of zone geometry for debug visualisation only. */
+  public debugInfo(): {
+    water: readonly Phaser.Geom.Rectangle[];
+    fishing: readonly Phaser.Geom.Rectangle[];
+    soft: readonly Phaser.Geom.Rectangle[];
+    solid: readonly Phaser.Geom.Rectangle[];
+  } {
+    return {
+      water:   this.waterPx,
+      fishing: this.fishingPx,
+      soft:    this.softPx,
+      solid:   this.solidPx
+    };
+  }
+
   private drawWater(scene: Phaser.Scene): void {
     if (this.waterPx.length === 0) return;
 
