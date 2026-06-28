@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { EventBus } from '../utils/EventBus';
+import { COMBAT } from '../config/GameConfig';
 import { Slime } from '../entities/Slime';
 import type { Player } from '../entities/Player';
 import type { Health } from '../systems/Health';
@@ -58,9 +59,9 @@ export class CombatSystem {
     this.scene = scene;
     this.player = player;
     this.playerHealth = playerHealth;
-    this.rodDamage = config.rodDamage ?? 1;
-    this.rodReach = config.rodReach ?? 22;
-    this.swingCooldownMs = config.swingCooldownMs ?? 380;
+    this.rodDamage = config.rodDamage ?? COMBAT.ROD_DAMAGE;
+    this.rodReach = config.rodReach ?? COMBAT.ROD_REACH;
+    this.swingCooldownMs = config.swingCooldownMs ?? COMBAT.SWING_COOLDOWN_MS;
 
     this.group = scene.physics.add.group();
 
@@ -101,7 +102,7 @@ export class CombatSystem {
     for (const slime of this.slimes) {
       if (slime.isDead) continue;
       const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, slime.x, slime.y);
-      if (dist <= this.rodReach + 8) {
+      if (dist <= this.rodReach + COMBAT.ROD_REACH_TOLERANCE) {
         const killed = slime.hurt(this.rodDamage, now);
         hitAny = true;
         if (killed) this.onSlimeKilled(slime);
@@ -114,7 +115,7 @@ export class CombatSystem {
   public hasTargetInReach(): boolean {
     if (!this.active) return false;
     return this.slimes.some(
-      (s) => !s.isDead && Phaser.Math.Distance.Between(this.player.x, this.player.y, s.x, s.y) <= this.rodReach + 8
+      (s) => !s.isDead && Phaser.Math.Distance.Between(this.player.x, this.player.y, s.x, s.y) <= this.rodReach + COMBAT.ROD_REACH_TOLERANCE
     );
   }
 
@@ -133,16 +134,16 @@ export class CombatSystem {
     if (remaining === 0 && !this.cleared) {
       this.cleared = true;
       this.active = false;
-      this.scene.time.delayedCall(400, () => EventBus.emit(CombatEvents.ENCOUNTER_CLEARED));
+      this.scene.time.delayedCall(COMBAT.CLEARED_DELAY_MS, () => EventBus.emit(CombatEvents.ENCOUNTER_CLEARED));
     }
   }
 
   private knockback(slime: Slime): void {
     const angle = Phaser.Math.Angle.Between(slime.x, slime.y, this.player.x, this.player.y);
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.velocity.x += Math.cos(angle) * 120;
-    body.velocity.y += Math.sin(angle) * 120;
-    this.scene.cameras.main.shake(120, 0.004);
+    body.velocity.x += Math.cos(angle) * COMBAT.PLAYER_KNOCKBACK;
+    body.velocity.y += Math.sin(angle) * COMBAT.PLAYER_KNOCKBACK;
+    this.scene.cameras.main.shake(COMBAT.CAMERA_SHAKE_MS, COMBAT.CAMERA_SHAKE);
   }
 
   /** Per-frame: drive slime AI toward the player. */

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { DEPTH } from '../config/GameConfig';
+import { COMBAT, DEPTH } from '../config/GameConfig';
 import { Health, HealthEvents } from '../systems/Health';
 import { ArtRegistry } from '../utils/AssetRegistry';
 import { createBusSubscription } from '../utils/EventBus';
@@ -32,7 +32,7 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
   public readonly touchDamage: number;
   private readonly bus = createBusSubscription();
   private readonly speed: number;
-  private readonly aggroRange = 90;
+  private readonly aggroRange = COMBAT.SLIME.AGGRO_RANGE;
   private aiState: 'idle' | 'chase' | 'dead' = 'idle';
   private fallbackGfx?: Phaser.GameObjects.Arc;
   private animsBuilt = false;
@@ -45,16 +45,16 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
     const hasArt = scene.textures.exists(idleKey);
     super(scene, options.x, options.y, hasArt ? idleKey : '__white', 0);
 
-    this.speed = options.speed ?? 34;
-    this.touchDamage = options.touchDamage ?? 1;
-    this.health = new Health(options.hp ?? 3, { invulnMs: 220, channel: `slime-${Phaser.Math.RND.uuid()}` });
+    this.speed = options.speed ?? COMBAT.SLIME.SPEED;
+    this.touchDamage = options.touchDamage ?? COMBAT.SLIME.TOUCH_DAMAGE;
+    this.health = new Health(options.hp ?? COMBAT.SLIME.HP, { invulnMs: 220, channel: `slime-${Phaser.Math.RND.uuid()}` });
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.setDepth(DEPTH.PLAYER - 0.1);
 
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(12, 10);
+    body.setSize(COMBAT.SLIME.BODY_W, COMBAT.SLIME.BODY_H);
     body.setCollideWorldBounds(true);
 
     if (hasArt) {
@@ -156,10 +156,10 @@ export class Slime extends Phaser.Physics.Arcade.Sprite {
 
     // Hit flash.
     this.setTintFill(0xffffff);
-    this.scene.time.delayedCall(80, () => this.clearTint());
+    this.scene.time.delayedCall(COMBAT.SLIME.HIT_FLASH_MS, () => this.clearTint());
     if (this.fallbackGfx) {
       this.fallbackGfx.setFillStyle(0xffffff);
-      this.scene.time.delayedCall(80, () => this.fallbackGfx?.setFillStyle(0x6cb058));
+      this.scene.time.delayedCall(COMBAT.SLIME.HIT_FLASH_MS, () => this.fallbackGfx?.setFillStyle(0x6cb058));
     }
 
     if (this.health.isDead) {

@@ -83,6 +83,51 @@ export const ECONOMY = {
   COOLER_STARTING_CAPACITY: 10
 } as const;
 
+/**
+ * Combat tuning constants. Centralised here so balance tweaks — rod reach,
+ * swing cooldown, slime speed — are one-stop changes rather than hunts
+ * through entity and system files.
+ *
+ * Note: Phaser Arcade physics has no bitmask collision categories (that is
+ * a Matter.js feature). Overlap/collider registrations in CombatSystem are
+ * the project's collision-filtering mechanism; body sizes live here so they
+ * can be tuned alongside the gameplay numbers they interact with.
+ */
+export const COMBAT = {
+  /** Starter rod damage per swing. */
+  ROD_DAMAGE: 1,
+  /** Hitbox reach of a rod swing in px (radius from player centre). */
+  ROD_REACH: 22,
+  /** Extra reach tolerance added when checking if a slime is within range. */
+  ROD_REACH_TOLERANCE: 8,
+  /** Minimum ms between rod swings. */
+  SWING_COOLDOWN_MS: 380,
+  /** Knockback impulse applied to the player on enemy contact (px/s added). */
+  PLAYER_KNOCKBACK: 120,
+  /** Camera shake magnitude on player hit. */
+  CAMERA_SHAKE: 0.004,
+  /** Camera shake duration on player hit (ms). */
+  CAMERA_SHAKE_MS: 120,
+  /** Delay between last slime death and ENCOUNTER_CLEARED event (ms). */
+  CLEARED_DELAY_MS: 400,
+
+  SLIME: {
+    /** Default slime hit points. */
+    HP: 3,
+    /** Default movement speed (px/s). */
+    SPEED: 34,
+    /** Default contact damage dealt to the player. */
+    TOUCH_DAMAGE: 1,
+    /** Aggro range — slime starts chasing when player enters this radius. */
+    AGGRO_RANGE: 90,
+    /** Physics body size (width, height) in px. */
+    BODY_W: 12,
+    BODY_H: 10,
+    /** Duration of the white hit-flash tint (ms). */
+    HIT_FLASH_MS: 80
+  }
+} as const;
+
 export const DEBUG = {
   SHOW_PHYSICS_BODIES: false
 } as const;
