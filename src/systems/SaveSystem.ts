@@ -1,5 +1,6 @@
 import { EventBus } from '../utils/EventBus';
 import { FISH_TABLE } from '../data/FishData';
+import { auditRawSave } from '../data/SaveDataSchema';
 import { FishingEvents } from '../systems/FishingSystem';
 import type { GoldWallet } from '../systems/GoldWallet';
 import type { Cooler } from '../systems/Cooler';
@@ -162,9 +163,15 @@ export const SaveSystem = {
     try {
       const raw = localStorage.getItem(slotKey(slot));
       if (!raw) return null;
-      const parsed = JSON.parse(raw) as Partial<SaveData>;
-      // Basic shape validation: a save must at least have a numeric gold.
-      if (!parsed || typeof parsed.gold !== 'number') return null;
+      const rawParsed = JSON.parse(raw) as unknown;
+      // Structural audit before migration — catches field-type mismatches
+      // that would silently produce wrong state after apply().
+      const reason = auditRawSave(rawParsed);
+      if (reason) {
+        console.warn(`[SaveSystem] slot ${slot} rejected: ${reason}`);
+        return null;
+      }
+      const parsed = rawParsed as Partial<SaveData>;
 
       // Version handling. Treat a missing version as v1 (the first format,
       // which predated this field). Refuse to load saves newer than this

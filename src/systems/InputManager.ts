@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { INPUT } from '../config/GameConfig';
 import type { MovementIntent } from '../types/GameTypes';
-import { VirtualJoystick } from './VirtualJoystick';
-import { ActionButton } from './ActionButton';
+import { VirtualJoystick } from '../ui/VirtualJoystick';
+import { ActionButton } from '../ui/ActionButton';
 
 type WasdKeys = Record<'W' | 'A' | 'S' | 'D', Phaser.Input.Keyboard.Key>;
 

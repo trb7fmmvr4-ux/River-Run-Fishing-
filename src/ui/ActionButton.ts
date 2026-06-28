@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../config/GameConfig';
-import { UILayout } from '../ui/UILayout';
+import { UILayout } from './UILayout';
 
 const RADIUS = 30;
 const MARGIN_X = 28;

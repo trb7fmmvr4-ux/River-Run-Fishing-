@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../config/GameConfig';
-import { UIAnchor } from '../ui/UIAnchor';
+import { UIAnchor } from './UIAnchor';
 import type { MovementIntent } from '../types/GameTypes';
 
 const BASE_RADIUS = 38;

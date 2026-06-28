@@ -9,6 +9,8 @@
  * needs to change.
  */
 
+import type { ZoneId } from './ZoneData';
+
 export type ObjectiveType = 'catch' | 'sell' | 'defeat' | 'reach';
 
 export interface QuestObjective {
@@ -22,13 +24,15 @@ export interface QuestObjective {
 
 export interface QuestReward {
   gold?: number;
-  unlockZone?: string;
+  /** Zone unlocked when this quest is completed. */
+  unlockZone?: ZoneId;
   rodTier?: number;
   /** Free-form item id reward (bait, equipment) for future systems. */
   item?: string;
 }
 
-export interface QuestDefinition {
+/** A single quest definition — pure data, no runtime state. */
+export interface QuestDef {
   id: string;
   name: string;
   giver: string;
@@ -39,12 +43,15 @@ export interface QuestDefinition {
   requires?: string;
 }
 
+/** @deprecated renamed to QuestDef for consistency with other data modules */
+export type QuestDefinition = QuestDef;
+
 /**
  * The starter quest chain — the spine that guides a new player through
  * the loop. Ordered, each guiding the next step. New quests are data —
  * add an entry here, no system change needed.
  */
-export const STARTER_QUESTS: QuestDefinition[] = [
+export const STARTER_QUESTS: QuestDef[] = [
   {
     id: 'q_intro_first_catch',
     name: 'FIRST CATCH',
@@ -103,3 +110,8 @@ export const STARTER_QUESTS: QuestDefinition[] = [
     requires: 'q_slime_slayer'
   }
 ];
+
+/** Look up a quest definition by id, or undefined if not found. */
+export function getQuestById(id: string): QuestDef | undefined {
+  return STARTER_QUESTS.find((q) => q.id === id);
+}
