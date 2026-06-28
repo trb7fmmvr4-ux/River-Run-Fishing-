@@ -11,6 +11,7 @@ import { VillageNPCs } from '../../world/VillageNPCs';
 import type { IntroSequence } from '../../systems/IntroSequence';
 import type { SaveableSystems } from '../../systems/SaveSystem';
 import { canonicalZoneId, type ZoneConnection } from '../../data/ZoneData';
+import { ENCOUNTERS } from '../../data/CombatData';
 
 export interface JourneyDeps {
   scene: Phaser.Scene;
@@ -179,12 +180,15 @@ export class JourneyDirector {
     this.slimeEncounterTriggered = true;
     this.deps.story.setFlag(StoryFlags.FIRST_SLIME);
     this.deps.playerHealthHUD.show();
-    this.deps.fishingHUD.flashSystemMessage('A slime blocks the path! Swing your rod (Click)', 4000);
     this.hasAttemptedFirstSwing = false;
-    this.deps.combat.startEncounter([
-      { x: this.deps.player.x + 40, y: this.deps.player.y - 6 },
-      { x: this.deps.player.x + 54, y: this.deps.player.y + 10 }
-    ]);
+
+    const enc = ENCOUNTERS['beach-first-slime'];
+    if (enc.hintMessage) {
+      this.deps.fishingHUD.flashSystemMessage(enc.hintMessage, enc.hintDurationMs);
+    }
+    this.deps.combat.startEncounter(
+      enc.enemies.map((e) => ({ x: this.deps.player.x + e.dx, y: this.deps.player.y + e.dy }))
+    );
   }
 
   private checkVillageGate(zone: Zone): void {

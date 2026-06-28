@@ -1,6 +1,7 @@
 import { EventBus } from '../utils/EventBus';
 import { Cooler } from './Cooler';
 import { GoldWallet } from './GoldWallet';
+import { SHOP_UPGRADES, type ShopUpgradeDef } from '../data/ShopData';
 
 export const ShopEvents = {
   SOLD: 'shop-sold',
@@ -8,12 +9,8 @@ export const ShopEvents = {
   PURCHASE_FAILED: 'shop-purchase-failed'
 } as const;
 
-export interface ShopUpgrade {
-  id: string;
-  label: string;
-  cost: number;
-  apply: (shop: Shop) => void;
-}
+/** Re-export so callers only need to import from Shop. */
+export type { ShopUpgradeDef as ShopUpgrade };
 
 /**
  * Orchestrates the two "exchange" actions of the economy: turning Cooler
@@ -27,20 +24,12 @@ export interface ShopUpgrade {
 export class Shop {
   public readonly cooler: Cooler;
   public readonly wallet: GoldWallet;
-  public readonly upgrades: ShopUpgrade[];
+  public readonly upgrades: ShopUpgradeDef[];
 
   constructor(cooler: Cooler, wallet: GoldWallet) {
     this.cooler = cooler;
     this.wallet = wallet;
-
-    this.upgrades = [
-      {
-        id: 'cooler-capacity',
-        label: 'Expand Cooler (+5)',
-        cost: 40,
-        apply: (shop) => shop.cooler.expandCapacity(5)
-      }
-    ];
+    this.upgrades = SHOP_UPGRADES;
   }
 
   /** Sells everything currently in the cooler. Returns the gold earned. */
