@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { DEPTH, TEXTURE_KEYS, WORLD } from '../config/GameConfig';
 import { ArtRegistry } from '../utils/AssetRegistry';
-import type { TileRect, ZoneDefinition } from '../data/ZoneData';
+import type { TileRect, ZoneConnection, ZoneDefinition } from '../data/ZoneData';
 
 export interface ZoneBuildResult {
   widthPx: number;
@@ -70,6 +70,10 @@ export class Zone {
 
   public get name(): string {
     return this.definition.name;
+  }
+
+  public get connections(): ZoneConnection[] | undefined {
+    return this.definition.connections;
   }
 
   /** Builds all visuals for the zone and returns its pixel dimensions. */

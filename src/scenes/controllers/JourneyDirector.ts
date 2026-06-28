@@ -10,7 +10,7 @@ import type { FishingHUD } from '../../ui/FishingHUD';
 import { VillageNPCs } from '../../world/VillageNPCs';
 import type { IntroSequence } from '../../systems/IntroSequence';
 import type { SaveableSystems } from '../../systems/SaveSystem';
-import { canonicalZoneId } from '../../data/ZoneData';
+import { canonicalZoneId, type ZoneConnection } from '../../data/ZoneData';
 
 export interface JourneyDeps {
   scene: Phaser.Scene;
@@ -220,26 +220,23 @@ export class JourneyDirector {
 
   /**
    * Zone-edge travel driven by the connections declared in each zone's
-   * definition (Priority 3 data-driven improvement).
-   * Guarded so it can't fire mid-combat or mid-cast.
+   * definition. Guarded so it can't fire mid-combat or mid-cast.
    */
   private checkZoneEdgeTransitions(here: string, zone: Zone): void {
     if (this.deps.combat.isActive || this.deps.fishing.isActive) return;
 
-    const zoneDef = this.deps.getZone();
-    const connections = (zoneDef as unknown as { connections?: ZoneConnection[] }).connections;
-
+    const connections = zone.connections;
     if (connections) {
       for (const conn of connections) {
+        if (conn.requiresUnlock && !this.deps.story.isZoneUnlocked(conn.requiresUnlock)) continue;
         if (this.edgeCrossed(conn.edge, zone)) {
           this.deps.transitionToZone(conn.toZone, conn.spawnHint);
           return;
         }
       }
     } else {
-      // Fallback: hardcoded adjacency for the two playable zones.
-      // Retained only until ZoneData gains connection declarations for all
-      // zones. Remove this branch once every active zone has `connections`.
+      // Fallback: hardcoded adjacency. Retained only for zones that predate
+      // ZoneData connections (none of the active zones as of sprint 1).
       this.checkLegacyEdgeTransitions(here, zone);
     }
   }
@@ -291,14 +288,3 @@ export class JourneyDirector {
   }
 }
 
-/** A zone-edge connection declared in ZoneData (Priority 3). */
-export interface ZoneConnection {
-  /** Which edge of THIS zone triggers the transition when the player crosses it. */
-  edge: 'left' | 'right' | 'top' | 'bottom';
-  /** Canonical id of the destination zone. */
-  toZone: string;
-  /** Optional spawn hint in the destination zone. */
-  spawnHint?: { spawnX?: number; spawnY?: number };
-  /** If present, the transition is gated on this zone being unlocked. */
-  requiresUnlock?: string;
-}

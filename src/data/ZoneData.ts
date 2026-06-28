@@ -90,6 +90,25 @@ export interface ZoneDefinition {
 
   /** FUTURE: harvestable resource node positions. Declared now, consumed later. */
   resourceNodes?: TileRect[];
+
+  /**
+   * Edges that connect to other zones. When the player crosses one of these
+   * edges the JourneyDirector transitions to the named zone. If omitted,
+   * JourneyDirector falls back to its legacy hardcoded adjacency list.
+   */
+  connections?: ZoneConnection[];
+}
+
+/** A zone-edge connection declared in zone config. */
+export interface ZoneConnection {
+  /** Which edge of THIS zone triggers the transition. */
+  edge: 'left' | 'right' | 'top' | 'bottom';
+  /** Canonical id of the destination zone. */
+  toZone: ZoneId;
+  /** Player spawn position in the destination zone (in pixels). */
+  spawnHint?: { spawnX?: number; spawnY?: number };
+  /** If set, the transition is gated on this zone being unlocked. */
+  requiresUnlock?: ZoneId;
 }
 
 /**
@@ -105,12 +124,18 @@ const BEACH: ZoneDefinition = {
   widthInTiles: 60,
   heightInTiles: 40,
   backgroundColor: 0x2b4a33,
-  // East strip, matching the old FISHING.ZONE_WIDTH (220px ≈ 13.75 tiles → 14).
   water: [{ x: 46, y: 0, width: 14, height: 40 }],
-  // A 3-tile-wide shoreline strip of land just west of the water; the
-  // player stands here to cast.
-  fishingAreas: [{ x: 43, y: 0, width: 3, height: 40 }]
+  fishingAreas: [{ x: 43, y: 0, width: 3, height: 40 }],
   // species omitted → uses the global FISH_TABLE (see resolveSpecies).
+  connections: [
+    {
+      edge: 'right',
+      toZone: 'forest-river',
+      // Enter forest-river from its west side, centred vertically.
+      spawnHint: { spawnX: 24, spawnY: 272 },
+      requiresUnlock: 'forest-river'
+    }
+  ]
 };
 
 /**
@@ -129,14 +154,21 @@ const FOREST_RIVER: ZoneDefinition = {
   widthInTiles: 80,
   heightInTiles: 34,
   backgroundColor: 0x274a3a,
-  // Central river channel running the full width.
   water: [{ x: 0, y: 14, width: 80, height: 8 }],
-  // Shoreline strips on both banks where the player can stand to cast.
   fishingAreas: [
     { x: 0, y: 11, width: 80, height: 3 },
     { x: 0, y: 22, width: 80, height: 3 }
   ],
-  species: fishForZone('forest-river')
+  species: fishForZone('forest-river'),
+  connections: [
+    {
+      edge: 'left',
+      toZone: 'beach',
+      // Enter beach near its east side (where the forest-river gate is),
+      // centred vertically. 960 * 0.85 ≈ 816; beach heightPx / 2 = 320.
+      spawnHint: { spawnX: 816, spawnY: 320 }
+    }
+  ]
 };
 
 /**
