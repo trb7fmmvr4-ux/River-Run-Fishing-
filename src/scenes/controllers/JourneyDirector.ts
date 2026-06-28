@@ -8,7 +8,7 @@ import type { FishingSystem } from '../../systems/FishingSystem';
 import type { Health } from '../../systems/Health';
 import type { FishingHUD } from '../../ui/FishingHUD';
 import { VillageNPCs } from '../../world/VillageNPCs';
-import type { IntroSequence } from '../../systems/IntroSequence';
+import type { IntroSequence } from './IntroSequence';
 import type { SaveableSystems } from '../../systems/SaveSystem';
 import { canonicalZoneId, type ZoneConnection } from '../../data/ZoneData';
 import { ENCOUNTERS } from '../../data/CombatData';

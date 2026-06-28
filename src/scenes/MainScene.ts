@@ -27,7 +27,7 @@ import { PlaceholderSound } from '../utils/PlaceholderSound';
 import { spawnParticleBurst } from '../utils/ParticleBurst';
 import { Health } from '../systems/Health';
 import { CombatSystem, CombatEvents } from '../systems/CombatSystem';
-import { IntroSequence, IntroEvents } from '../systems/IntroSequence';
+import { IntroSequence, IntroEvents } from './controllers/IntroSequence';
 import { createBusSubscription } from '../utils/EventBus';
 import { HUDScene, type HUDSceneData } from './HUDScene';
 import { UIPanelController } from './controllers/UIPanelController';

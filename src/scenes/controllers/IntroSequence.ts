@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
-import { EventBus, createBusSubscription } from '../utils/EventBus';
-import { DialogueBox } from '../ui/DialogueBox';
-import { FishingEvents } from '../systems/FishingSystem';
-import { StoryFlags, type StoryProgress } from '../systems/StoryProgress';
-import { ArtRegistry } from '../utils/AssetRegistry';
-import { DEPTH, UI_THEME } from '../config/GameConfig';
-import { NPCAnimator, type NPCDirection } from '../entities/NPCAnimator';
-import { PlaceholderSound } from '../utils/PlaceholderSound';
-import type { HotbarHUD } from '../ui/HotbarHUD';
-import type { QuestSystem } from '../systems/QuestSystem';
+import { EventBus, createBusSubscription } from '../../utils/EventBus';
+import { DialogueBox } from '../../ui/DialogueBox';
+import { FishingEvents } from '../../systems/FishingSystem';
+import { StoryFlags, type StoryProgress } from '../../systems/StoryProgress';
+import { ArtRegistry } from '../../utils/AssetRegistry';
+import { DEPTH, UI_THEME } from '../../config/GameConfig';
+import { NPCAnimator, type NPCDirection } from '../../entities/NPCAnimator';
+import { PlaceholderSound } from '../../utils/PlaceholderSound';
+import type { HotbarHUD } from '../../ui/HotbarHUD';
+import type { QuestSystem } from '../../systems/QuestSystem';
 
 export const IntroEvents = {
   /** Fired when the scripted intro + tutorial are fully complete. */
