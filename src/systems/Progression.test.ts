@@ -1,8 +1,31 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+// vi.hoisted() runs before vi.mock() hoisting, so this registry is available
+// inside the mock factory. It lets the test fire real CATCH_SUCCESS /
+// ENEMY_DEFEATED events through the bus the way the game does, which is the
+// only way to meaningfully exercise the setRestoring guard.
+const eventRegistry = vi.hoisted(() => {
+  type Listener = [fn: (...args: unknown[]) => void, ctx: unknown];
+  const registry = new Map<string, Listener[]>();
+  return {
+    fire: (event: string, ...args: unknown[]) => {
+      (registry.get(event) ?? []).forEach(([fn, ctx]) => fn.apply(ctx, args));
+    },
+    register: (event: string, fn: (...args: unknown[]) => void, ctx: unknown) => {
+      const bucket = registry.get(event) ?? [];
+      registry.set(event, [...bucket, [fn, ctx]]);
+    },
+    clear: () => registry.clear()
+  };
+});
+
 vi.mock('../utils/EventBus', () => ({
   EventBus: { emit: vi.fn(), on: vi.fn(), off: vi.fn() },
-  createBusSubscription: () => ({ on: vi.fn(), once: vi.fn(), dispose: vi.fn() })
+  createBusSubscription: () => ({
+    on: (event: string, fn: (...args: unknown[]) => void, ctx: unknown) =>
+      eventRegistry.register(event, fn, ctx),
+    dispose: vi.fn()
+  })
 }));
 vi.mock('./FishingSystem', () => ({
   FishingEvents: { CATCH_SUCCESS: 'fishing-catch-success', CAST: 'fishing-cast', CATCH_FAILURE: 'fishing-catch-failure', CANCELLED: 'fishing-cancelled' }
@@ -16,7 +39,16 @@ import { EventBus } from '../utils/EventBus';
 
 const mockEmit = vi.mocked(EventBus.emit);
 
+// onCatch only reads fish.rarity; a minimal stand-in is enough.
+function fireCatch(rarity = 'common') {
+  eventRegistry.fire('fishing-catch-success', { rarity });
+}
+function fireEnemyDefeated() {
+  eventRegistry.fire('combat-enemy-defeated');
+}
+
 beforeEach(() => {
+  eventRegistry.clear();
   mockEmit.mockClear();
 });
 
@@ -37,10 +69,17 @@ describe('Progression', () => {
 
     it('levels up when xp meets the threshold', () => {
       const p = new Progression();
-      // Level 1→2 requires 50 * 1^1.5 = 50 xp
+      // Level 1→2 requires round(50 * 1^1.5) = 50 xp
       p.gainXp('fishing', 50);
       expect(p.level('fishing')).toBe(2);
       expect(p.xpInLevel('fishing')).toBe(0);
+    });
+
+    it('carries leftover xp into the new level', () => {
+      const p = new Progression();
+      p.gainXp('fishing', 60); // 50 to level, 10 left over
+      expect(p.level('fishing')).toBe(2);
+      expect(p.xpInLevel('fishing')).toBe(10);
     });
 
     it('emits LEVEL_UP when levelling', () => {
@@ -52,7 +91,7 @@ describe('Progression', () => {
 
     it('handles multi-level-up in one gainXp call', () => {
       const p = new Progression();
-      // Level 1→2: 50 xp, level 2→3: 50*2^1.5 ≈ 141 xp, total ~191
+      // L1→2: 50, L2→3: round(50*2^1.5)≈141, total ~191
       p.gainXp('fishing', 200);
       expect(p.level('fishing')).toBeGreaterThanOrEqual(3);
     });
@@ -70,6 +109,49 @@ describe('Progression', () => {
       expect(p.level('combat')).toBe(2);
       expect(p.level('fishing')).toBe(1);
       expect(p.level('crafting')).toBe(1);
+    });
+  });
+
+  describe('event-driven xp', () => {
+    it('awards fishing xp on CATCH_SUCCESS, scaled by rarity', () => {
+      const p = new Progression();
+      fireCatch('common'); // 5 xp
+      expect(p.xpInLevel('fishing')).toBe(5);
+      fireCatch('rare'); // +30 xp
+      expect(p.xpInLevel('fishing')).toBe(35);
+    });
+
+    it('awards combat xp on ENEMY_DEFEATED', () => {
+      const p = new Progression();
+      fireEnemyDefeated(); // 8 xp
+      expect(p.xpInLevel('combat')).toBe(8);
+    });
+  });
+
+  describe('setRestoring', () => {
+    it('suppresses event-driven xp while restoring is active', () => {
+      const p = new Progression();
+      p.setRestoring(true);
+      fireCatch('common');
+      fireEnemyDefeated();
+      expect(p.xpInLevel('fishing')).toBe(0);
+      expect(p.xpInLevel('combat')).toBe(0);
+    });
+
+    it('resumes event-driven xp once restoring is turned off', () => {
+      const p = new Progression();
+      p.setRestoring(true);
+      fireCatch('common');
+      p.setRestoring(false);
+      fireCatch('common');
+      expect(p.xpInLevel('fishing')).toBe(5); // only the post-restore catch
+    });
+
+    it('does not block explicit gainXp (restore applies levels directly)', () => {
+      const p = new Progression();
+      p.setRestoring(true);
+      p.gainXp('fishing', 10);
+      expect(p.xpInLevel('fishing')).toBe(10);
     });
   });
 
@@ -95,24 +177,6 @@ describe('Progression', () => {
     });
   });
 
-  describe('setRestoring', () => {
-    it('blocks gainXp while restoring is active', () => {
-      const p = new Progression();
-      p.setRestoring(true);
-      // gainXp is called internally by event handlers; simulate directly
-      p.gainXp('fishing', 100);
-      // When restoring=true, gainXp is not blocked directly on the public
-      // method — the guard is in the event handlers. But setRestoring=true
-      // prevents the event-driven path from awarding xp.
-      // Direct gainXp still runs (it's the event handler that checks restoring).
-      // Verify the flag itself:
-      p.setRestoring(false);
-      // After restoring off, xp should work again
-      p.gainXp('fishing', 0);
-      expect(p.level('fishing')).toBeGreaterThanOrEqual(1);
-    });
-  });
-
   describe('toJSON / restore', () => {
     it('toJSON returns a plain snapshot', () => {
       const p = new Progression();
@@ -122,6 +186,13 @@ describe('Progression', () => {
       expect(snap.fishing.xp).toBe(30);
       expect(snap.combat.xp).toBe(8);
       expect(snap.crafting.level).toBe(1);
+    });
+
+    it('toJSON is a deep copy, not a live reference', () => {
+      const p = new Progression();
+      const snap = p.toJSON();
+      p.gainXp('fishing', 10);
+      expect(snap.fishing.xp).toBe(0); // snapshot unchanged
     });
 
     it('restore applies saved levels and xp', () => {
@@ -151,9 +222,16 @@ describe('Progression', () => {
 
     it('restore ignores missing skill keys', () => {
       const p = new Progression();
-      p.restore({ fishing: { level: 3, xp: 10 } } as Parameters<typeof p.restore>[0]);
+      p.restore({ fishing: { level: 3, xp: 10 } });
       expect(p.level('fishing')).toBe(3);
       expect(p.level('combat')).toBe(1); // unchanged
+    });
+
+    it('restore defaults missing xp to 0', () => {
+      const p = new Progression();
+      p.restore({ fishing: { level: 4 } as { level: number; xp: number } });
+      expect(p.level('fishing')).toBe(4);
+      expect(p.xpInLevel('fishing')).toBe(0);
     });
   });
 });
